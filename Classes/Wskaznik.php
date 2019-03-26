@@ -64,7 +64,28 @@ class Wskaznik {
         $newWskaznik->setKosztyDzialanosciOperacyjnej($excel, $yearsTable);
         $newWskaznik->setZyskBrutto($excel, $yearsTable);
         $newWskaznik->setZyskNetto($excel, $yearsTable);
-
+        $newWskaznik->setWskPlynnosciBiezacej();
+        $newWskaznik->setWskPlynnosciSzybkiej();
+        $newWskaznik->setWskPlynnosciGotowka();
+        $newWskaznik->setRotacjaNaleznosciWrazach();
+        $newWskaznik->setRotacjaNaleznosciWdniach();
+        $newWskaznik->setRotacjaZobowiazanWrazach();
+        $newWskaznik->setRotacjaZobowiazanWdniach();
+        $newWskaznik->setRotacjaZapasowWrazach();
+        $newWskaznik->setRotacjaZapasowWdniach();
+        $newWskaznik->setROI();
+        $newWskaznik->setROE();
+        $newWskaznik->setZyskownoscPrzychodow();
+        $newWskaznik->setPokrycieAktywow();
+        $newWskaznik->setZadluzenieOgolne();
+        $newWskaznik->setPokrycieMajatkuTrwalego();
+        $newWskaznik->setProduktywnoscAktywow();
+        $newWskaznik->setProduktywnoscMajatkuTrwalego();
+        $newWskaznik->setCyklKonwersjiGotowkowej();
+        $newWskaznik->setDynamikaPrzychodow();
+        $newWskaznik->setZyski();
+        $newWskaznik->setAktywaTrwaleProcent();
+        $newWskaznik->setAktywaObrotoweProcent();
 
         return $newWskaznik;
     }
@@ -91,7 +112,7 @@ class Wskaznik {
 
     /* Wskaźniki płynności finansowej */
     private $wskPlynnosciBiezacej;          // TABLICA[5-elementowa] Wskaźnik płynności bieżącej
-    private $wslPlynnosciSzybkiej;          // TABLICA[5-elementowa] Wskaźnik płynności szybkiej
+    private $wskPlynnosciSzybkiej;          // TABLICA[5-elementowa] Wskaźnik płynności szybkiej
     private $wskPlynnosciGotowka;           // TABLICA[5-elementowa] Wskaźnik płynności gotówką
 
     /* Wskaźniki sprawności */
@@ -111,6 +132,18 @@ class Wskaznik {
     private $pokrycieAktywow;               // TABLICA[5-elementowa] Pokrycia aktywów
     private $zadluzenieOgolne;              // TABLICA[5-elementowa] Zadłużenia ogólnego
     private $pokrycieMajatkuTrwalego;       // TABLICA[5-elementowa] Pokrycia majątku trwałego
+
+    /* Wskaźniki produktywności */
+    private $produktywnoscAktywow;          // TABLICA[5-elementowa] Produktywności aktywów
+    private $produktywnoscMajatkuTrwalego;  // TABLICA[5-elementowa] Produktywności majątku trwałego
+
+    private $cyklKonwersjiGotowkowej;       // TABLICA[5-elementowa] Cykl konwersji gotówkowej
+    private $dynamikaPrzychodow;            // TABLICA[4-elementowa] WARTOŚC W PROCENTACH Dynamika przychodów
+    private $zyski;                         // TABLICA[4-elementowa] WARTOŚC W PROCENTACH Zyski
+
+    private $aktywaTrwaleProcent;           // TABLICA[5-elementowa] Aktywa trwałe Procent
+    private $aktywaObrotoweProcent;         // TABLICA[5-elementowa] Aktywa obrotowe Procent
+
 
 
 
@@ -600,19 +633,19 @@ class Wskaznik {
     /**
      * @return array
      */
-    public function getWslPlynnosciSzybkiej() {
-        return $this->wslPlynnosciSzybkiej;
+    public function getWskPlynnosciSzybkiej() {
+        return $this->wskPlynnosciSzybkiej;
     }
 
     /**
-     * $wslPlynnosciSzybkiej = ($naleznosciKrotkoterminowe[i] + $inwestycjeKrotkoterminowe[i]) / $zobowiazaniaKrotkoterminowe[i]
+     * $wskPlynnosciSzybkiej = ($naleznosciKrotkoterminowe[i] + $inwestycjeKrotkoterminowe[i]) / $zobowiazaniaKrotkoterminowe[i]
      */
-    public function setWslPlynnosciSzybkiej() {
+    public function setWskPlynnosciSzybkiej() {
         $toReturn = [];
         for($i=0; $i<5; $i++) {
             $toReturn[] = ($this->naleznosciKrotkoterminowe[$i] + $this->inwestycjeKrotkoterminowe[$i]) / $this->zobowiazaniaKrotkoterminowe[$i];
         }
-        $this->wslPlynnosciSzybkiej = $toReturn;
+        $this->wskPlynnosciSzybkiej = $toReturn;
     }
 
     /**
@@ -803,7 +836,7 @@ class Wskaznik {
     }
 
     /**
-     * $pokrycieAktywow = $pasywaRazem / $kapitalWlasny
+     * $pokrycieAktywow = $pasywaRazem[i] / $kapitalWlasny[i]
      */
     public function setPokrycieAktywow() {
         $toReturn = [];
@@ -816,39 +849,166 @@ class Wskaznik {
     /**
      * @return mixed
      */
-    public function getZadluzenieOgolne()
-    {
+    public function getZadluzenieOgolne() {
         return $this->zadluzenieOgolne;
     }
 
     /**
-     * @param mixed $zadluzenieOgolne
+     * $zadluzenieOgolne = $zobowiazania[i] / $kapitalWlasny[i]
      */
-    public function setZadluzenieOgolne($zadluzenieOgolne)
-    {
-        $this->zadluzenieOgolne = $zadluzenieOgolne;
+    public function setZadluzenieOgolne() {
+        $toReturn = [];
+        for($i=0; $i<5; $i++) {
+            $toReturn[] = $this->zobowiazania[$i] / $this->kapitalWlasny[$i];
+        }
+        $this->zadluzenieOgolne = $toReturn;
     }
 
     /**
      * @return mixed
      */
-    public function getPokrycieMajatkuTrwalego()
-    {
+    public function getPokrycieMajatkuTrwalego() {
         return $this->pokrycieMajatkuTrwalego;
     }
 
     /**
-     * @param mixed $pokrycieMajatkuTrwalego
+     * $pokrycieMajatkuTrwalego = $kapitalWlasny[i] / $aktywaTrwale[i]
      */
-    public function setPokrycieMajatkuTrwalego($pokrycieMajatkuTrwalego)
-    {
-        $this->pokrycieMajatkuTrwalego = $pokrycieMajatkuTrwalego;
+    public function setPokrycieMajatkuTrwalego() {
+        $toReturn = [];
+        for($i=0; $i<5; $i++) {
+            $toReturn[] = $this->kapitalWlasny[$i] / $this->aktywaTrwale[$i];
+        }
+        $this->pokrycieMajatkuTrwalego = $toReturn;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getProduktywnoscAktywow() {
+        return $this->produktywnoscAktywow;
+    }
 
+    /**
+     * $produktywnoscAktywow = $przychodyNetto[i] / $pasywaRazem[i]
+     */
+    public function setProduktywnoscAktywow() {
+        $toReturn = [];
+        for($i=0; $i<5; $i++) {
+            $toReturn[] = $this->przychodyNetto[$i] / $this->pasywaRazem[$i];
+        }
+        $this->produktywnoscAktywow = $toReturn;
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getProduktywnoscMajatkuTrwalego() {
+        return $this->produktywnoscMajatkuTrwalego;
+    }
 
+    /**
+     * $produktywnoscMajatkuTrwalego = $przychodyNetto[i] / $aktywaTrwale[i]
+     */
+    public function setProduktywnoscMajatkuTrwalego() {
+        $toReturn = [];
+        for($i=0; $i<5; $i++) {
+            $toReturn[] = $this->przychodyNetto[$i] / $this->aktywaTrwale[$i];
+        }
+        $this->produktywnoscMajatkuTrwalego = $toReturn;
+    }
 
+    /**
+     * @return array
+     */
+    public function getCyklKonwersjiGotowkowej() {
+        return $this->cyklKonwersjiGotowkowej;
+    }
+
+    /**
+     * $cyklKonwersjiGotowkowej = $rotacjaNaleznosciWdniach[i] + $rotacjaZapasowWdniach[i] - $rotacjaZobowiazanWdniach[i]
+     */
+    public function setCyklKonwersjiGotowkowej() {
+        $toReturn = [];
+        for($i=0; $i<5; $i++) {
+            $toReturn[] = $this->rotacjaNaleznosciWdniach[$i] + $this->rotacjaZapasowWdniach[$i] - $this->rotacjaZobowiazanWdniach[$i];
+        }
+        $this->cyklKonwersjiGotowkowej = $toReturn;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDynamikaPrzychodow() {
+        return $this->dynamikaPrzychodow;
+    }
+
+    /**
+     * $dynamikaPrzychodow = ((($przychodyNetto[i] / $przychodyNetto[i+1])*1) - 1)*100
+     */
+    public function setDynamikaPrzychodow() {
+        $toReturn = [];
+        for($i=0; $i<4; $i++) {
+            $toReturn[] = ((($this->przychodyNetto[$i] / $this->przychodyNetto[$i+1])*1) - 1)*100;
+        }
+        $this->dynamikaPrzychodow = $toReturn;
+    }
+
+    /**
+     * @return array
+     */
+    public function getZyski() {
+        return $this->zyski;
+    }
+
+    /**
+     * $zyski = ((($zyskNetto[i] / $zyskNetto[i+1])*1) - 1)*100
+     */
+    public function setZyski() {
+        $toReturn = [];
+        for($i=0; $i<4; $i++) {
+            $toReturn[] = ((($this->zyskNetto[$i] / $this->zyskNetto[$i+1])*1) - 1)*100;
+        }
+        $this->zyski = $toReturn;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAktywaTrwaleProcent() {
+        return $this->aktywaTrwaleProcent;
+    }
+
+    /**
+     * $aktywaTrwaleProcent = ($aktywaTrwale[i] / $pasywaRazem[i]) *100
+     */
+    public function setAktywaTrwaleProcent() {
+        $toReturn = [];
+        for($i=0; $i<5; $i++) {
+            $toReturn[] = ($this->aktywaTrwale[$i] / $this->pasywaRazem[$i]) * 100;
+        }
+        $this->aktywaTrwaleProcent = $toReturn;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAktywaObrotoweProcent() {
+        return $this->aktywaObrotoweProcent;
+    }
+
+    /**
+     * $aktywaObrotoweProcent = ($aktywaObrotowe[i] / $pasywaRazem[i]) *100
+     */
+    public function setAktywaObrotoweProcent() {
+        $toReturn = [];
+        for($i=0; $i<5; $i++) {
+            $toReturn[] = ($this->aktywaObrotowe[$i] / $this->pasywaRazem[$i]) * 100;
+        }
+        $this->aktywaObrotoweProcent = $toReturn;
+    }
+
+    
 
     //FUNCTIONS
     public function __construct() {
@@ -871,7 +1031,7 @@ class Wskaznik {
         $this->zyskBrutto = [];
         $this->zyskNetto = [];
         $this->wskPlynnosciBiezacej = [];
-        $this->wslPlynnosciSzybkiej = [];
+        $this->wskPlynnosciSzybkiej = [];
         $this->wskPlynnosciGotowka = [];
         $this->rotacjaNaleznosciWrazach = [];
         $this->rotacjaNaleznosciWdniach = [];
@@ -882,6 +1042,16 @@ class Wskaznik {
         $this->ROI = [];
         $this->ROE = [];
         $this->zyskownoscPrzychodow = [];
+        $this->pokrycieAktywow = [];
+        $this->zadluzenieOgolne = [];
+        $this->pokrycieMajatkuTrwalego = [];
+        $this->produktywnoscAktywow = [];
+        $this->produktywnoscMajatkuTrwalego = [];
+        $this->cyklKonwersjiGotowkowej = [];
+        $this->dynamikaPrzychodow = [];
+        $this->zyski = [];
+        $this->aktywaTrwaleProcent = [];
+        $this->aktywaObrotoweProcent = [];
     }
 
 
