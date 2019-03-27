@@ -1008,7 +1008,7 @@ class Wskaznik {
         $this->aktywaObrotoweProcent = $toReturn;
     }
 
-    
+
 
     //FUNCTIONS
     public function __construct() {

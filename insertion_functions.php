@@ -206,3 +206,54 @@ function insertDaneDlaWariantu($templateWord, $bilans, $wariant) {
     insertKlasycznyOkresZwrotu($templateWord, $bilans, $wariant);
     insertZdyskontowanyOkresZwrotu($templateWord, $bilans, $wariant);
 }
+
+/* Wstawiam wybrane dane finansowe firmy z 5 lat */
+function insertWybraneDaneFirmy($templateWord, $wskaznik) {
+    foreach($wskaznik->getAktywaTrwale() as $key => $value) {
+        $templateWord->setValue('DF0_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getRzeczoweAktywaTrwale() as $key => $value) {
+        $templateWord->setValue('DF1_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getSrodkiTrwale() as $key => $value) {
+        $templateWord->setValue('DF2_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getAktywaObrotowe() as $key => $value) {
+        $templateWord->setValue('DF3_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getNaleznosciKrotkoterminowe() as $key => $value) {
+        $templateWord->setValue('DF4_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getInwestycjeKrotkoterminowe() as $key => $value) {
+        $templateWord->setValue('DF5_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getKapitalWlasny() as $key => $value) {
+        $templateWord->setValue('DF6_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getZobowiazania() as $key => $value) {
+        $templateWord->setValue('DF7_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getZobowiazaniaDlugoterminowe() as $key => $value) {
+        $templateWord->setValue('DF8_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getZobowiazaniaKrotkoterminowe() as $key => $value) {
+        $templateWord->setValue('DF9_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getPasywaRazem() as $key => $value) {
+        $templateWord->setValue('DF10_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getPrzychodyNetto() as $key => $value) {
+        $templateWord->setValue('DF11_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getKosztyDzialanosciOperacyjnej() as $key => $value) {
+        $templateWord->setValue('DF12_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getZyskBrutto() as $key => $value) {
+        $templateWord->setValue('DF13_'.$key, number_format($value, 2, ',', ' '));
+    }
+    foreach($wskaznik->getZyskNetto() as $key => $value) {
+        $templateWord->setValue('DF14_'.$key, number_format($value, 2, ',', ' '));
+    }
+}
+
+/* Wstawiam wybrane dane finansowe firmy z 5 lat */
