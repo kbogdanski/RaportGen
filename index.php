@@ -41,8 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //var_dump($bilansWariantBranzowy);
         //var_dump($bilansWariantSredniejDynamiki);
 
+        $yearsTable2 = Wskaznik::CreateBilansTabelYear($_FILES['file']['tmp_name'], $_POST['rok']);
+        $wskaznik = Wskaznik::CreateWskaznik($_FILES['file']['tmp_name'], $yearsTable2);
+        var_dump($yearsTable2);
+        var_dump($wskaznik);
+
         insertNazwaFirmy($templateWord, $bilans);                                   // Wstawiam nazwę firmy
-        insertYears($templateWord, $bilans);                                        // Wstawiam lata do raportu
+        insertYears($templateWord, $bilans, $yearsTable2);                          // Wstawiam lata do raportu
         insertWartoscLikwidacyjna($templateWord, $bilans);                          // Wstawiam wartosc likwidacyjna
         insertWartoscDCF($templateWord, $wartoscDCF);                               // Wstawiam wartosc szacowana metodą DCF
         insertZalozeniaDoWycenyDCF($templateWord, $bilans);                         // Wstawiam założenia do wyceny DCF
@@ -61,10 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //header("Content-Disposition: attachment; filename=raport.docx; ");
         //echo file_get_contents('raport.docx');
 
-        $yearsTable2 = Wskaznik::CreateBilansTabelYear($_FILES['file']['tmp_name'], $_POST['rok']);
-        $wskaznik = Wskaznik::CreateWskaznik($_FILES['file']['tmp_name'], $yearsTable2);
-        var_dump($yearsTable2);
-        var_dump($wskaznik);
+
 
     } else {
         echo "Wczytany plik nie zawiera bilansów za wybrane lata ";
