@@ -256,4 +256,66 @@ function insertWybraneDaneFirmy($templateWord, $wskaznik) {
     }
 }
 
-/* Wstawiam wybrane dane finansowe firmy z 5 lat */
+/* Wstawiam analize wskaźnikową z 5 lat */
+function inserWskazniki($templateWord, $wskaznik) {
+    foreach($wskaznik->getWskPlynnosciBiezacej() as $key => $value) {
+        $templateWord->setValue('WSK0_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getWskPlynnosciSzybkiej() as $key => $value) {
+        $templateWord->setValue('WSK1_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getWskPlynnosciGotowka() as $key => $value) {
+        $templateWord->setValue('WSK2_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getRotacjaNaleznosciWrazach() as $key => $value) {
+        $templateWord->setValue('WSK3_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getRotacjaNaleznosciWdniach() as $key => $value) {
+        $templateWord->setValue('WSK4_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getRotacjaZobowiazanWrazach() as $key => $value) {
+        $templateWord->setValue('WSK5_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getRotacjaZobowiazanWdniach() as $key => $value) {
+        $templateWord->setValue('WSK6_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getRotacjaZapasowWrazach() as $key => $value) {
+        $templateWord->setValue('WSK7_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getRotacjaZapasowWdniach() as $key => $value) {
+        $templateWord->setValue('WSK8_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getROI() as $key => $value) {
+        $templateWord->setValue('WSK9_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getROE() as $key => $value) {
+        $templateWord->setValue('WSK10_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getZyskownoscPrzychodow() as $key => $value) {
+        $templateWord->setValue('WSK11_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getPokrycieAktywow() as $key => $value) {
+        $templateWord->setValue('WSK12_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getZadluzenieOgolne() as $key => $value) {
+        $templateWord->setValue('WSK13_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getPokrycieMajatkuTrwalego() as $key => $value) {
+        $templateWord->setValue('WSK14_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getProduktywnoscAktywow() as $key => $value) {
+        $templateWord->setValue('WSK15_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getProduktywnoscMajatkuTrwalego() as $key => $value) {
+        $templateWord->setValue('WSK16_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getCyklKonwersjiGotowkowej() as $key => $value) {
+        $templateWord->setValue('WSK17_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getDynamikaPrzychodow() as $key => $value) {
+        $templateWord->setValue('WSK18_'.$key, number_format(round($value),2,',',' '));
+    }
+    foreach($wskaznik->getZyski() as $key => $value) {
+        $templateWord->setValue('WSK19_'.$key, number_format(round($value),2,',',' '));
+    }
+}
