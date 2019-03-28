@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $yearsTable2 = Wskaznik::CreateBilansTabelYear($_FILES['file']['tmp_name'], $_POST['rok']);
         $wskaznik = Wskaznik::CreateWskaznik($_FILES['file']['tmp_name'], $yearsTable2);
-        var_dump($yearsTable2);
-        var_dump($wskaznik);
+        //var_dump($yearsTable2);
+        //var_dump($wskaznik);
 
         insertNazwaFirmy($templateWord, $bilans);                                   // Wstawiam nazwę firmy
         insertYears($templateWord, $bilans, $yearsTable2);                          // Wstawiam lata do raportu
@@ -59,6 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         insertDaneDlaWariantu($templateWord, $bilansWariantSredniejDynamiki, 2);    // Wstawiam dane do raportu - WARIANT ŚREDNIEJ DYNAMIKI
         insertWybraneDaneFirmy($templateWord, $wskaznik);                           // Wstawiam wybrane dane finansowe
         insertWskazniki($templateWord, $wskaznik);                                  // Wstawiam analize wskaźnikową
+
+        /* Wstawiam słowa */
+        insertPorownaniePrzychodowZeSprzedazy($templateWord, $wskaznik);            // WYBRANE DANE FIRMY - (niższym/wyższym/takim samym) Wstawiam informacje o różnicy w przychodach ze sprzedaży
+        insertOkreslenieDynamikiPrzychodow($templateWord, $wskaznik);               // WYBRANE DANE FIRMY - (dodatnią/ujemną) Wstawiam informacje o dynamice przychodów w roku bazowym
 
         /* Zapisanie raportu */
         $firma = $bilans->getFirma();
@@ -414,7 +418,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </form>
             <br><br><br><br>
-            <a href="word.php">Generuj plik Word</a>
+            <!-- <a href="word.php">Generuj plik Word</a> -->
             <br>
             <!-- <a href="szablon.php">Generuj raport z szablonu</a> -->
         </div>

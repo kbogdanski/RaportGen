@@ -324,3 +324,28 @@ function insertWskazniki($templateWord, $wskaznik) {
         $templateWord->setValue('WSK19_'.$key, number_format($value,2,',',' '));
     }
 }
+
+/* WYBRANE DANE FIRMY - Wstawiam informacje o różnicy w przychodach ze sprzedaży */
+function insertPorownaniePrzychodowZeSprzedazy($templateWord, $wskaznik) {
+    $przychody = $wskaznik->getPrzychodyNetto();
+    $roznica = $przychody[0] - $przychody[1];
+    if ($roznica < 0 ) {
+        $templateWord->setValue('NIZ-WYZ', 'niższym');
+    }
+    if ($roznica > 0 ) {
+        $templateWord->setValue('NIZ-WYZ', 'wyższym');
+    }
+    if ($roznica == 0 ) {
+        $templateWord->setValue('NIZ-WYZ', 'takim samym');
+    }
+}
+
+/* WYBRANE DANE FIRMY - Wstawiam informacje o dynamice przychodów w roku bazowym */
+function insertOkreslenieDynamikiPrzychodow($templateWord, $wskaznik) {
+    $dynamika = $wskaznik->getDynamikaPrzychodow();
+    if ($dynamika[0] >= 0) {
+        $templateWord->setValue('DOD-UJE', 'dodatnią');
+    } else {
+        $templateWord->setValue('DOD-UJE', 'ujemną');
+    }
+}
