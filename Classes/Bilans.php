@@ -728,6 +728,10 @@ class Bilans {
         $this->amortyzacja = $toReturn;
     }
 
+    public function changeAmortyzacja($amortyzacja) {
+        $this->amortyzacja = $amortyzacja;
+    }
+
     public function getBilansTablica() {
         return $this->bilansTablica;
     }
@@ -1761,7 +1765,7 @@ class Bilans {
     }
 
 
-    public function loadDataForBilansObject($file, $yearsTable, $form, $wariant) {
+    public function loadDataForBilansObject($file, $yearsTable, $form) {
         //Wczytuje plik EXCELA z danymi finansowymi firmy oraz ustawia aktywny arkusz z którego będzie czytał dane
         $excel = PHPExcel_IOFactory::load($file);
         $excel->setActiveSheetIndex(0);
@@ -1794,12 +1798,15 @@ class Bilans {
         $this->setZyskNetto($excel, $yearsTable);
         $this->setAmortyzacja($excel, $yearsTable);
 
+        //Ustawia atrybuty dla których dane pobiera z formularza
+        $this->loadFormInformation($form);
+    }
+
+
+    public function calculateOthersData($wariant) {
         $this->umorzenieSrTrwalych = 0;
         $this->setSprzedazPierwszyRokPrognozy();
         $this->setKosztyOperacyjnePierwszyRokPrognozy();
-
-        //Ustawia atrybuty dla których dane pobiera z formularza
-        $this->loadFormInformation($form);
 
         //Ustawia atrybut wartosc likwidacyjna
         $this->setWartoscLikwidacyjna();

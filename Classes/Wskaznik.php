@@ -28,9 +28,13 @@ class Wskaznik {
                 $status = 1;
                 $toReturn["B"] = $value;
             }
-            while ($value != null && $col <= 26 && $status != 5 ) {
+            while ($col <= 26 && $status != 5 ) {
                 $value = $excel->getActiveSheet()->getCell("$COLUMN[$col]7")->getValue();
-                $toReturn["$COLUMN[$col]"] = $value;
+                if ($value != null) {
+                    $toReturn["$COLUMN[$col]"] = $value;
+                } else {
+                    $toReturn["$COLUMN[$col]"] = "brak danych";
+                }
                 $status++;
                 $col++;
             }

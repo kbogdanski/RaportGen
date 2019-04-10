@@ -6,13 +6,13 @@
  * Time: 20:00
  */
 
-require_once ("Classes/PHPExcel.php");
-require_once ("Classes/IRRHelper.php");
-require_once ("vendor/autoload.php");
-require_once ("Classes/Bilans.php");
-require_once ("Classes/DCF.php");
-require_once ("Classes/Wskaznik.php");
-require_once ("insertion_functions.php");
+//require_once ("Classes/PHPExcel.php");
+//require_once ("Classes/IRRHelper.php");
+//require_once ("vendor/autoload.php");
+//require_once ("Classes/Bilans.php");
+//require_once ("Classes/DCF.php");
+//require_once ("Classes/Wskaznik.php");
+//require_once ("insertion_functions.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //var_dump($_POST);
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="col-sm-2"></div>
         <div class="col-sm-8">
             <br><br>
-            <form role="form" method="post" action="#" enctype="multipart/form-data">
+            <form role="form" method="post" action="summary.php" enctype="multipart/form-data">
                 <div class="form-group">
                     <div class="row">
                         <div class="col-sm-6">
