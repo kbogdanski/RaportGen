@@ -13,12 +13,12 @@ function insertNazwaFirmy($templateWord, $bilans) {
 }
 
 //Wstawiam lata do raportu
-function insertYears($templateWord, $bilans, $yearsTableforWskaznik) {
+function insertYears($templateWord, $bilans, $wskaznik) {
     $templateWord->setValue('B0', $bilans->getRok0());
     $templateWord->setValue('B1', $bilans->getRok1());
     $templateWord->setValue('B2', $bilans->getRok2());
     $i = 0;
-    foreach($yearsTableforWskaznik as $value) {
+    foreach($wskaznik->getYearsTabel() as $value) {
         if ($i > 2) {
             $templateWord->setValue('B'.$i, $value);
         }
