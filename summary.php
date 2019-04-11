@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bilans = unserialize($_SESSION['bilans']);
         $bilansWariantBranzowy = unserialize($_SESSION['bilansWariantBranzowy']);
         $bilansWariantSredniejDynamiki = unserialize($_SESSION['bilansWariantSredniejDynamiki']);
-        $yearsTable2 = $_SESSION['yearsTable2'];
+        $wskaznik = unserialize($_SESSION['wskaznik']);
 
         if ($_POST['amortyzacja0'] != '0.00' && $_POST['amortyzacja0'] != null) {
             $amortyzacja[0] = $_POST['amortyzacja0'];
@@ -53,7 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['bilans'] = serialize($bilans);
         $_SESSION['bilansWariantBranzowy'] = serialize($bilansWariantBranzowy);
         $_SESSION['bilansWariantSredniejDynamiki'] = serialize($bilansWariantSredniejDynamiki);
-        $_SESSION['yearsTable2'] = $yearsTable2;
+        $_SESSION['wartoscDCF'] = serialize($wartoscDCF);
+        $_SESSION['wskaznik'] = serialize($wskaznik);
 
         //var_dump($_POST);
         //var_dump($bilans);
@@ -81,15 +82,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bilansWariantSredniejDynamiki->getSzacunekWartosciKapitaluWlasnegoSuma());
 
         $yearsTable2 = Wskaznik::CreateBilansTabelYear($file, $rok);
-        //$wskaznik = Wskaznik::CreateWskaznik($file, $yearsTable2);
+        $wskaznik = Wskaznik::CreateWskaznik($file, $yearsTable2);
+        $wskaznik->calculateOthersData();
 
         $_SESSION['bilans'] = serialize($bilans);
         $_SESSION['bilansWariantBranzowy'] = serialize($bilansWariantBranzowy);
         $_SESSION['bilansWariantSredniejDynamiki'] = serialize($bilansWariantSredniejDynamiki);
-        $_SESSION['yearsTable2'] = $yearsTable2;
+        $_SESSION['wartoscDCF'] = serialize($wartoscDCF);
+        $_SESSION['wskaznik'] = serialize($wskaznik);
     }
-
-
 
     //var_dump($_POST);
     //var_dump($_FILES);
@@ -151,12 +152,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php
                 if (($bilans->getAmortyzacja()[0]) == 0 || ($bilans->getAmortyzacja()[1]) == 0 || ($bilans->getAmortyzacja()[2]) == 0) {
                     echo "<div class='alert alert-danger'>Amortyzacja w jedym lub kilku wczytanach latach wynosi 0.
-                                                          Podaj wartośc Amortyzacji dla lat w których jej wartość wynosi 0.</div>";
+                                                          Przed wygenerowaniem raportu podaj wartośc Amortyzacji dla lat w których jej wartość wynosi 0.</div>";
                 } else {
                     echo "<div class='alert alert-success'>Zaczytane dane zawierają wartość Amortyzacji</div>";
                 }
                 ?>
-                <p align="center"><button type="submit" class="btn btn-primary">Przelicz z nowymi wartościami amortyzacji</button></p>
+                <p><button type="submit" class="btn btn-primary btn-block">Przelicz z nowymi wartościami amortyzacji</button></p>
             </form>
         </div>
         <div class="col-sm-3"></div>
@@ -173,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <dt class="col-sm-4">Lata do analizy:</dt>
         <ul class="col-sm-8">
             <?php
-            foreach($yearsTable2 as $value) {
+            foreach($wskaznik->getYearsTabel() as $value) {
                 echo "<li>$value</li>";
             }
             ?>
@@ -189,5 +190,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <dt class="col-sm-4">Wartość szacowana metodą likwidacyjną:</dt>
         <dd class="col-sm-8"><?php echo number_format($bilans->getWartoscLikwidacyjna(),2,',',' ') ?></dd>
     </dl>
+    <div class="row">
+        <div class="col-sm-12">
+            <a class="btn btn-success btn-block" href="generate.php">GENERUJ RAPORT</a>
+        </div>
+    </div>
 </div>
 </body>
