@@ -33,17 +33,13 @@ class Wskaznik {
                 if ($value != null) {
                     $toReturn["$COLUMN[$col]"] = $value;
                 } else {
-                    $toReturn["$COLUMN[$col]"] = "brak danych";
+                    break;
                 }
                 $status++;
                 $col++;
             }
         }
-        if ($status == 5) {
-            return $toReturn;
-        } else {
-            return 0;
-        }
+        return $toReturn;
     }
 
     static public function CreateWskaznik($excelFile, $yearsTable) {
@@ -51,6 +47,7 @@ class Wskaznik {
         $excel->setActiveSheetIndex(0);
         $newWskaznik = new Wskaznik();
         $newWskaznik->setYearsTabel($yearsTable);
+        $newWskaznik->setIloscLatDoAnalizy($yearsTable);
         $newWskaznik->setAktywaTrwale($excel, $yearsTable);
         $newWskaznik->setRzeczoweAktywaTrwale($excel, $yearsTable);
         $newWskaznik->setSrodkiTrwale($excel, $yearsTable);
@@ -68,34 +65,13 @@ class Wskaznik {
         $newWskaznik->setKosztyDzialanosciOperacyjnej($excel, $yearsTable);
         $newWskaznik->setZyskBrutto($excel, $yearsTable);
         $newWskaznik->setZyskNetto($excel, $yearsTable);
-        $newWskaznik->setWskPlynnosciBiezacej();
-        $newWskaznik->setWskPlynnosciSzybkiej();
-        $newWskaznik->setWskPlynnosciGotowka();
-        $newWskaznik->setRotacjaNaleznosciWrazach();
-        $newWskaznik->setRotacjaNaleznosciWdniach();
-        $newWskaznik->setRotacjaZobowiazanWrazach();
-        $newWskaznik->setRotacjaZobowiazanWdniach();
-        $newWskaznik->setRotacjaZapasowWrazach();
-        $newWskaznik->setRotacjaZapasowWdniach();
-        $newWskaznik->setROI();
-        $newWskaznik->setROE();
-        $newWskaznik->setZyskownoscPrzychodow();
-        $newWskaznik->setPokrycieAktywow();
-        $newWskaznik->setZadluzenieOgolne();
-        $newWskaznik->setPokrycieMajatkuTrwalego();
-        $newWskaznik->setProduktywnoscAktywow();
-        $newWskaznik->setProduktywnoscMajatkuTrwalego();
-        $newWskaznik->setCyklKonwersjiGotowkowej();
-        $newWskaznik->setDynamikaPrzychodow();
-        $newWskaznik->setZyski();
-        $newWskaznik->setAktywaTrwaleProcent();
-        $newWskaznik->setAktywaObrotoweProcent();
 
         return $newWskaznik;
     }
 
     //ATTRIBUTES
     private $yearsTabel;                    // TABLICA[5-elementowa] Zawiera lata z ktorych są wybrane dane finansowe firmy
+    private $iloscLatDoAnalizy;             // LICZBA Zawiera liczbę określajacą ile w zaczytanym pliku było lat do analizy (3, 4 lub 5)
     private $aktywaTrwale;                  // TABLICA[5-elementowa] Wiersz 11           Aktywa trwałe
     private $rzeczoweAktywaTrwale;          // TABLICA[5-elementowa] Wiersz 17           Rzeczowe aktywa trwałe
     private $srodkiTrwale;                  // TABLICA[5-elementowa] Wiersz 18           Środki trwałe
@@ -164,6 +140,20 @@ class Wskaznik {
      */
     public function setYearsTabel($yearsTabel) {
         $this->yearsTabel = $yearsTabel;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getIloscLatDoAnalizy() {
+        return $this->iloscLatDoAnalizy;
+    }
+
+    /**
+     * @param mixed $yearsTabel
+     */
+    public function setIloscLatDoAnalizy($yearsTabel) {
+        $this->iloscLatDoAnalizy = count($yearsTabel);
     }
 
     /**
@@ -628,7 +618,8 @@ class Wskaznik {
      */
     public function setWskPlynnosciBiezacej() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->aktywaObrotowe[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
         }
         $this->wskPlynnosciBiezacej = $toReturn;
@@ -646,7 +637,8 @@ class Wskaznik {
      */
     public function setWskPlynnosciSzybkiej() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = ($this->naleznosciKrotkoterminowe[$i] + $this->inwestycjeKrotkoterminowe[$i]) / $this->zobowiazaniaKrotkoterminowe[$i];
         }
         $this->wskPlynnosciSzybkiej = $toReturn;
@@ -664,7 +656,8 @@ class Wskaznik {
      */
     public function setWskPlynnosciGotowka() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->inwestycjeKrotkoterminowe[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
         }
         $this->wskPlynnosciGotowka = $toReturn;
@@ -682,7 +675,8 @@ class Wskaznik {
      */
     public function setRotacjaNaleznosciWrazach() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->przychodyNetto[$i] / $this->naleznosciKrotkoterminowe[$i];
         }
         $this->rotacjaNaleznosciWrazach = $toReturn;
@@ -700,7 +694,8 @@ class Wskaznik {
      */
     public function setRotacjaNaleznosciWdniach() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->naleznosciOdPozostalychJedn[$i] / $this->przychodyNetto[$i] * 360;
         }
         $this->rotacjaNaleznosciWdniach = $toReturn;
@@ -718,7 +713,8 @@ class Wskaznik {
      */
     public function setRotacjaZobowiazanWrazach() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->przychodyNetto[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
         }
         $this->rotacjaZobowiazanWrazach = $toReturn;
@@ -736,7 +732,8 @@ class Wskaznik {
      */
     public function setRotacjaZobowiazanWdniach() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->zobowiazaniaKrotkoterminowe[$i] / $this->przychodyNetto[$i] * 360;
         }
         $this->rotacjaZobowiazanWdniach = $toReturn;
@@ -754,7 +751,8 @@ class Wskaznik {
      */
     public function setRotacjaZapasowWrazach() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->przychodyNetto[$i] / $this->zapasy[$i];
         }
         $this->rotacjaZapasowWrazach = $toReturn;
@@ -772,7 +770,8 @@ class Wskaznik {
      */
     public function setRotacjaZapasowWdniach() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->zapasy[$i] / $this->przychodyNetto[$i] * 360;
         }
         $this->rotacjaZapasowWdniach = $toReturn;
@@ -790,7 +789,8 @@ class Wskaznik {
      */
     public function setROI() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->zyskNetto[$i] / $this->pasywaRazem[$i];
         }
         $this->ROI = $toReturn;
@@ -808,7 +808,8 @@ class Wskaznik {
      */
     public function setROE() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->zyskNetto[$i] / $this->kapitalWlasny[$i];
         }
         $this->ROE = $toReturn;
@@ -826,7 +827,8 @@ class Wskaznik {
      */
     public function setZyskownoscPrzychodow() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->zyskNetto[$i] / $this->przychodyNetto[$i];
         }
         $this->zyskownoscPrzychodow = $toReturn;
@@ -844,7 +846,8 @@ class Wskaznik {
      */
     public function setPokrycieAktywow() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->pasywaRazem[$i] / $this->kapitalWlasny[$i];
         }
         $this->pokrycieAktywow = $toReturn;
@@ -862,7 +865,8 @@ class Wskaznik {
      */
     public function setZadluzenieOgolne() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->zobowiazania[$i] / $this->kapitalWlasny[$i];
         }
         $this->zadluzenieOgolne = $toReturn;
@@ -880,7 +884,8 @@ class Wskaznik {
      */
     public function setPokrycieMajatkuTrwalego() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->kapitalWlasny[$i] / $this->aktywaTrwale[$i];
         }
         $this->pokrycieMajatkuTrwalego = $toReturn;
@@ -898,7 +903,8 @@ class Wskaznik {
      */
     public function setProduktywnoscAktywow() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->przychodyNetto[$i] / $this->pasywaRazem[$i];
         }
         $this->produktywnoscAktywow = $toReturn;
@@ -916,7 +922,8 @@ class Wskaznik {
      */
     public function setProduktywnoscMajatkuTrwalego() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->przychodyNetto[$i] / $this->aktywaTrwale[$i];
         }
         $this->produktywnoscMajatkuTrwalego = $toReturn;
@@ -934,7 +941,8 @@ class Wskaznik {
      */
     public function setCyklKonwersjiGotowkowej() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = $this->rotacjaNaleznosciWdniach[$i] + $this->rotacjaZapasowWdniach[$i] - $this->rotacjaZobowiazanWdniach[$i];
         }
         $this->cyklKonwersjiGotowkowej = $toReturn;
@@ -952,7 +960,8 @@ class Wskaznik {
      */
     public function setDynamikaPrzychodow() {
         $toReturn = [];
-        for($i=0; $i<4; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc-1; $i++) {
             $toReturn[] = ((($this->przychodyNetto[$i] / $this->przychodyNetto[$i+1])*1) - 1)*100;
         }
         $this->dynamikaPrzychodow = $toReturn;
@@ -969,8 +978,9 @@ class Wskaznik {
      * $zyski = ((($zyskNetto[i] / $zyskNetto[i+1])*1) - 1)*100
      */
     public function setZyski() {
+        $ilosc = $this->iloscLatDoAnalizy;
         $toReturn = [];
-        for($i=0; $i<4; $i++) {
+        for($i=0; $i<$ilosc-1; $i++) {
             $toReturn[] = ((($this->zyskNetto[$i] / $this->zyskNetto[$i+1])*1) - 1)*100;
         }
         $this->zyski = $toReturn;
@@ -988,7 +998,8 @@ class Wskaznik {
      */
     public function setAktywaTrwaleProcent() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = ($this->aktywaTrwale[$i] / $this->pasywaRazem[$i]) * 100;
         }
         $this->aktywaTrwaleProcent = $toReturn;
@@ -1006,7 +1017,8 @@ class Wskaznik {
      */
     public function setAktywaObrotoweProcent() {
         $toReturn = [];
-        for($i=0; $i<5; $i++) {
+        $ilosc = $this->iloscLatDoAnalizy;
+        for($i=0; $i<$ilosc; $i++) {
             $toReturn[] = ($this->aktywaObrotowe[$i] / $this->pasywaRazem[$i]) * 100;
         }
         $this->aktywaObrotoweProcent = $toReturn;
@@ -1058,6 +1070,29 @@ class Wskaznik {
         $this->aktywaObrotoweProcent = [];
     }
 
-
+    public function calculateOthersData() {
+        $this->setWskPlynnosciBiezacej();
+        $this->setWskPlynnosciSzybkiej();
+        $this->setWskPlynnosciGotowka();
+        $this->setRotacjaNaleznosciWrazach();
+        $this->setRotacjaNaleznosciWdniach();
+        $this->setRotacjaZobowiazanWrazach();
+        $this->setRotacjaZobowiazanWdniach();
+        $this->setRotacjaZapasowWrazach();
+        $this->setRotacjaZapasowWdniach();
+        $this->setROI();
+        $this->setROE();
+        $this->setZyskownoscPrzychodow();
+        $this->setPokrycieAktywow();
+        $this->setZadluzenieOgolne();
+        $this->setPokrycieMajatkuTrwalego();
+        $this->setProduktywnoscAktywow();
+        $this->setProduktywnoscMajatkuTrwalego();
+        $this->setCyklKonwersjiGotowkowej();
+        $this->setDynamikaPrzychodow();
+        $this->setZyski();
+        $this->setAktywaTrwaleProcent();
+        $this->setAktywaObrotoweProcent();
+    }
 
 }
