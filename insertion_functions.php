@@ -8,12 +8,12 @@
  */
 
 //Wstawiam nazwę firmy do raportu
-function insertNazwaFirmy($templateWord, $bilans) {
+function insertNazwaFirmy(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans) {
     $templateWord->setValue('firma', $bilans->getFirma());
 }
 
 //Wstawiam lata do raportu
-function insertYears($templateWord, $bilans, $wskaznik) {
+function insertYears(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans, Wskaznik $wskaznik) {
     $templateWord->setValue('B0', $bilans->getRok0());
     $templateWord->setValue('B1', $bilans->getRok1());
     $templateWord->setValue('B2', $bilans->getRok2());
@@ -30,18 +30,18 @@ function insertYears($templateWord, $bilans, $wskaznik) {
 }
 
 /* Wstawiam wartość likwidacyjna */
-function insertWartoscLikwidacyjna($templateWord, $bilans) {
+function insertWartoscLikwidacyjna(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans) {
     $value = $bilans->getWartoscLikwidacyjna();
     $templateWord->setValue('wartoscLikwidacyjna', number_format(round($value),0,',',' '));
 }
 
 /* Wstawiam wartość szacowaną moetodą DCF*/
-function insertWartoscDCF($templateWord, $wartoscDCF) {
+function insertWartoscDCF(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $wartoscDCF) {
     $templateWord->setValue('wartoscDCF', number_format(round($wartoscDCF),0,',',' '));
 }
 
 /* Wstawiam założenia do wyceny DCF - dane z formularza */
-function insertZalozeniaDoWycenyDCF($templateWord, $bilans) {
+function insertZalozeniaDoWycenyDCF(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans) {
     $templateWord->setValue('srOprZadlDl',number_format(($bilans->getSrOprZadlDl()*100),1,',',' '));
     $templateWord->setValue('stopaPodDoch',number_format(($bilans->getStopaPodDoch()*100),1,',',' '));
     $templateWord->setValue('stopaDyskontowa',number_format(($bilans->getStopaDyskontowa()*100),2,',',' '));
@@ -52,7 +52,7 @@ function insertZalozeniaDoWycenyDCF($templateWord, $bilans) {
 }
 
 /* Wstawiam bilans firmy */
-function insertBilans($templateWord, $bilans) {
+function insertBilans(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans) {
     $index = 0;
     $bilansTable = $bilans->getBilansTablica();
     foreach ($bilansTable as $key => $year) {
@@ -64,7 +64,7 @@ function insertBilans($templateWord, $bilans) {
 }
 
 /* Wstawiam pozostałe dane bilansu firmy */
-function insertBilansOtherData ($templateWord, $bilans) {
+function insertBilansOtherData (\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans) {
     foreach ($bilans->getPrzychodyZeSprzedazy() as $key => $value) {
         $templateWord->setValue('B' . $key . '_PrzyZeSprz', number_format($value, 2, ',', ' '));
     }
@@ -110,7 +110,7 @@ function insertBilansOtherData ($templateWord, $bilans) {
 }
 
 /*Wstawianie stopy wzrostu zmiennych*/
-function insertStopyWzrostu($templateWord, $bilans) {
+function insertStopyWzrostu(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans) {
     for($i=1; $i<=2; $i++) {
         foreach($bilans->getOczekiwanaStopaWzrostu()[$i] as $key => $value) {
             $templateWord->setValue('W'.$i.'_'.$key,number_format(($value*100),1,',',' '));
@@ -124,7 +124,7 @@ function insertStopyWzrostu($templateWord, $bilans) {
 /* 2 - WARIANT ŚREDNIEJ DYNAMIKI    */
 /************************************/
 /* Obliczenie wart. kap. wł. dyskontowanie przepływów przynależnych właścicielom */
-function insertPrzeplywyPieniezPrzynWlas($templateWord, $bilans, $wariant) {
+function insertPrzeplywyPieniezPrzynWlas(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans, $wariant) {
     $templateWord->setValue('W'.$wariant.'_RKKW',round($bilans->getRazemKosztKapitaluWlasnego()*100));
     foreach($bilans->getPrzeplywyPieniezPrzynWlas() as $key => $value) {
         $templateWord->setValue('W'.$wariant.'_T11_'.$key, number_format(round($value),0,',',' '));
@@ -139,7 +139,7 @@ function insertPrzeplywyPieniezPrzynWlas($templateWord, $bilans, $wariant) {
 }
 
 /* Obliczenie wart. kap. wł. dyskontowanie przepływów przynaleznych właścicielom i wierzycielom */
-function insertPrzeplywyPieniezPrzynWlasWierz($templateWord, $bilans, $wariant) {
+function insertPrzeplywyPieniezPrzynWlasWierz(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans, $wariant) {
     $templateWord->setValue('W'.$wariant.'_SWKK',number_format(($bilans->getSredniWazonyKosztKapitalu()*100),2,',',' '));
     foreach($bilans->getPrzepPienPrzynStFinan() as $key => $value) {
         $templateWord->setValue('W'.$wariant.'_T21_'.$key, number_format(round($value),0,',',' '));
@@ -156,7 +156,7 @@ function insertPrzeplywyPieniezPrzynWlasWierz($templateWord, $bilans, $wariant) 
 }
 
 /* Obliczenie IRR wg rzeczywistej wartości PV (IRR do porównania z kosztem kapitału własnego) */
-function insertIRR_wgRzeczywistejWartosci($templateWord, $bilans, $wariant) {
+function insertIRR_wgRzeczywistejWartosci(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans, $wariant) {
     foreach($bilans->getIRR_wgRzeczywistejWartosciPVTable() as $key => $value) {
         $templateWord->setValue('W'.$wariant.'_T3_CF'.$key, number_format(round($value),0,',',' '));
     }
@@ -164,7 +164,7 @@ function insertIRR_wgRzeczywistejWartosci($templateWord, $bilans, $wariant) {
 }
 
 /* Obliczenie IRR wg ceny ofertowej (IRR do porównania z kosztem kapitału własnego) */
-function insertIRR_wgCenyOfertowej($templateWord, $bilans, $wariant) {
+function insertIRR_wgCenyOfertowej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans, $wariant) {
     foreach($bilans->getIRR_wgCenyOfertowejTable() as $key => $value) {
         $templateWord->setValue('W'.$wariant.'_T4_CF'.$key, number_format(round($value),0,',',' '));
     }
@@ -172,7 +172,7 @@ function insertIRR_wgCenyOfertowej($templateWord, $bilans, $wariant) {
 }
 
 /* Wyznaczenie WACC */
-function insertWACC($templateWord, $bilans, $wariant) {
+function insertWACC(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans, $wariant) {
     $templateWord->setValue('W'.$wariant.'_RWDP',number_format(($bilans->getRynkowaWartoscDluguProcent()*100),2,',',' '));
     $templateWord->setValue('W'.$wariant.'_RWDK',number_format(($bilans->getRynkowaWartoscDluguKoszt()*100),2,',',' '));
     $templateWord->setValue('W'.$wariant.'_RWD_WACC',number_format(($bilans->getRynkowaWartoscDluguWACC()*100),2,',',' '));
@@ -182,7 +182,7 @@ function insertWACC($templateWord, $bilans, $wariant) {
 }
 
 /* Klasyczny okres zwrotu */
-function insertKlasycznyOkresZwrotu($templateWord, $bilans, $wariant) {
+function insertKlasycznyOkresZwrotu(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans, $wariant) {
     foreach($bilans->getKlasycznyOkresZwrotuSkumulowaneFCFE() as $key => $value) {
         $templateWord->setValue('W'.$wariant.'_T61_CF'.$key, number_format(round($value),0,',',' '));
     }
@@ -192,7 +192,7 @@ function insertKlasycznyOkresZwrotu($templateWord, $bilans, $wariant) {
 }
 
 /* Zdyskontowany okres zwrotu */
-function insertZdyskontowanyOkresZwrotu($templateWord, $bilans, $wariant) {
+function insertZdyskontowanyOkresZwrotu(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Bilans $bilans, $wariant) {
     foreach($bilans->getZdyskontowanyOkresZwrotuSkumulowaneFCFE() as $key => $value) {
         $templateWord->setValue('W'.$wariant.'_T71_CF'.$key, number_format(round($value),0,',',' '));
     }
@@ -213,7 +213,7 @@ function insertDaneDlaWariantu($templateWord, $bilans, $wariant) {
 }
 
 /* Wstawiam wybrane dane finansowe firmy z 5 lat */
-function insertWybraneDaneFirmy($templateWord, $wskaznik) {
+function insertWybraneDaneFirmy(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
     foreach($wskaznik->getAktywaTrwale() as $key => $value) {
         $templateWord->setValue('DF0_'.$key, number_format($value, 2, ',', ' '));
     }
@@ -262,7 +262,7 @@ function insertWybraneDaneFirmy($templateWord, $wskaznik) {
 }
 
 /* Wstawiam analize wskaźnikową z 5 lat */
-function insertWskazniki($templateWord, $wskaznik) {
+function insertWskazniki(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
     foreach($wskaznik->getWskPlynnosciBiezacej() as $key => $value) {
         $templateWord->setValue('WSK0_'.$key, number_format($value,2,',',' '));
     }
@@ -326,7 +326,7 @@ function insertWskazniki($templateWord, $wskaznik) {
 }
 
 /* WYBRANE DANE FIRMY - Wstawiam informacje o różnicy w przychodach ze sprzedaży */
-function insertPorownaniePrzychodowZeSprzedazy($templateWord, $wskaznik) {
+function insertPorownaniePrzychodowZeSprzedazy(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
     $przychody = $wskaznik->getPrzychodyNetto();
     $roznica = $przychody[0] - $przychody[1];
     if ($roznica < 0 ) {
@@ -341,7 +341,7 @@ function insertPorownaniePrzychodowZeSprzedazy($templateWord, $wskaznik) {
 }
 
 /* WYBRANE DANE FIRMY - Wstawiam informacje o dynamice przychodów w roku bazowym */
-function insertOkreslenieDynamikiPrzychodow($templateWord, $wskaznik) {
+function insertOkreslenieDynamikiPrzychodow(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
     $dynamika = $wskaznik->getDynamikaPrzychodow();
     if ($dynamika[0] >= 0) {
         $templateWord->setValue('DOD-UJE', 'dodatnią');
