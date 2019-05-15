@@ -9,10 +9,16 @@ session_start();
 
 require_once ("Classes/PHPExcel.php");
 require_once ("Classes/IRRHelper.php");
+require_once ("Classes/phplot.php");
 require_once ("vendor/autoload.php");
 require_once ("Classes/Bilans.php");
 require_once ("Classes/DCF.php");
 require_once ("Classes/Wskaznik.php");
+require_once ("Classes/CHART_Aktywa.php");
+require_once ("Classes/CHART_WskPlynnosci.php");
+require_once ("Classes/CHART_WskCyklu.php");
+require_once ("Classes/CHART_WskROIROE.php");
+require_once ("Classes/CHART_WskZadluzenia.php");
 require_once ("insertion_functions.php");
 
 $bilans = unserialize($_SESSION['bilans']);
@@ -49,10 +55,40 @@ insertOkreslenieDynamikiPrzychodow($templateWord, $wskaznik);               // W
 $firma = $bilans->getFirma();
 $data = date('Y-m-d');
 $fileName = $firma.' '.$data;
+
+
+$plot = new PHPlot(800, 400);
+$plot1 = new PHPlot(1100, 400);
+$plot2 = new PHPlot(1100, 400);
+$plot3 = new PHPlot(1100, 400);
+$plot4 = new PHPlot(1100, 400);
+$chartAktywa = new CHART_Aktywa($plot, $wskaznik);
+$path_aktywa = $chartAktywa->createChartAktywaImg();
+insertChartAktywa($templateWord, $path_aktywa);
+
+$chartWskPlynnosci = new CHART_WskPlynnosci($plot1, $wskaznik);
+$path_wskPlynnosci = $chartWskPlynnosci->createChartWskPlynnosciImg();
+insertChartWskPlynnosci($templateWord, $path_wskPlynnosci);
+
+$chartWskCyklu = new CHART_WskCyklu($plot2, $wskaznik);
+$path_wskCyklu = $chartWskCyklu->createChartWskCykluImg();
+insertChartWskCyklu($templateWord, $path_wskCyklu);
+
+$chartWskROIROE = new CHART_WskROIROE($plot3, $wskaznik);
+$path_wskROIROE = $chartWskROIROE->createChartWskROIROEImg();
+insertChartWskROIROE($templateWord, $path_wskROIROE);
+
+$chartWskZadluzenia = new CHART_WskZadluzenia($plot4, $wskaznik);
+$path_wskZadluzenia = $chartWskZadluzenia->createChartWskZadluzeniaImg();
+insertChartWskZadluzenia($templateWord, $path_wskZadluzenia);
+
+
+//$templateWord->setImg('IMGD#1',array('src' => 'image.jpg','swh'=>'250'));
+
 $templateWord->saveAs("$fileName.docx");
 
-?>
 
+?>
 <!DOCTYPE>
 <html lang="PL" xmlns="http://www.w3.org/1999/html">
 <head>

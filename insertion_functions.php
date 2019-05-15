@@ -349,3 +349,32 @@ function insertOkreslenieDynamikiPrzychodow(\PhpOffice\PhpWord\TemplateProcessor
         $templateWord->setValue('DOD-UJE', 'ujemną');
     }
 }
+
+/***********/
+/* WYKRESY */
+/***********/
+
+/* ANALIZA SYTUACJI FINANSOWEJ - Wstawiam wykres "Analiza aktywów trwałych" */
+function insertChartAktywa(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_AKTYWA',array('src' => "$path_image",'swh'=>'550'));
+}
+
+/* ANALIZA SYTUACJI FINANSOWEJ - Wstawiam wykres "Wskaźnik płynności" */
+function insertChartWskPlynnosci(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_WSKPLYNNOSCI',array('src' => "$path_image",'swh'=>'650'));
+}
+
+/* ANALIZA SYTUACJI FINANSOWEJ - Wstawiam wykres "Wskaźnik cyklu konwersji gotówkowej" */
+function insertChartWskCyklu(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_WSKCYKLU',array('src' => "$path_image",'swh'=>'650'));
+}
+
+/* ANALIZA SYTUACJI FINANSOWEJ - Wstawiam wykres "Wskaźnik ROI i ROE" */
+function insertChartWskROIROE(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_WSKROIROE',array('src' => "$path_image",'swh'=>'650'));
+}
+
+/* ANALIZA SYTUACJI FINANSOWEJ - Wstawiam wykres "Wskaźnik zadłużenia ogólnego i pokrycia aktywów" */
+function insertChartWskZadluzenia(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_WSKZADLUZENIA',array('src' => "$path_image",'swh'=>'650'));
+}
