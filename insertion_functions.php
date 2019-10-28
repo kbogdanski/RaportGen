@@ -348,6 +348,23 @@ function insertOkreslenieDynamikiPrzychodow(\PhpOffice\PhpWord\TemplateProcessor
     } else {
         $templateWord->setValue('DOD-UJE', 'ujemną');
     }
+    if ($dynamika[1] >= 0) {
+        $templateWord->setValue('DOD-UJE-2', 'dodatnim');
+    } else {
+        $templateWord->setValue('DOD-UJE-2', 'ujemnym');
+    }
+}
+
+/* WYBRANE DANE FIRMY - Punkt nr 2 (zysk) */
+function insertWybraneDaneFirmy_punkt_2(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    $zyskiProcentTable = $wskaznik->getZyski();
+    if ($zyskiProcentTable[0] >= 0) {
+        $templateWord->setValue('podsumowanie_zyski_1', 'dobrym sygnałem jest stała obecność');
+        $templateWord->setValue('podsumowanie_zyski_2', 'silna');
+    } else {
+        $templateWord->setValue('podsumowanie_zyski_1', 'złym sygnałem jest brak obecności');
+        $templateWord->setValue('podsumowanie_zyski_2', 'słaba');
+    }
 }
 
 /***********/
@@ -378,3 +395,748 @@ function insertChartWskROIROE(\PhpOffice\PhpWord\TemplateProcessor $templateWord
 function insertChartWskZadluzenia(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
     $templateWord->setImg('IMG_WSKZADLUZENIA',array('src' => "$path_image",'swh'=>'650'));
 }
+
+/*********************/
+/* Wstawianie treści */
+/*********************/
+
+/* Wstawianie treści dotyczącej analizy wskaźnikowej */
+
+/* PŁYNNOŚĆ FINANSOWA */
+/* Dotyczy: wskaźnik płynności bieżącej */
+function insertWskPlynnosciBiezacej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${wsk_plynnosci_biezacej_numer}
+    //Dla wartości powyżej 2,0
+    $wsk_plynnosci_biezacej_wysoki = array(
+        'bardzo',
+        'bardzo korzystny sygnał. Tak dobre wyniki należą do rzadkości.',
+        'silną stronę. Zaznaczyć jednocześnie należy, że wyniki tej firmy mieszczą się powyżej wartości średnich dla branży.'
+    );
+
+    //Dla wartości 1,0 - 2,0
+    $wsk_plynnosci_biezacej_sredni = array(
+        '',
+        'korzystny sygnał.',
+        'dość silną stronę.'
+    );
+
+    //Dla wartosci poniżej 1,0
+    $wsk_plynnosci_biezacej_niski = array(
+        'niezbyt',
+        'niekorzystny sygnał.',
+        'słabą stronę.'
+    );
+    $wskPlynnosciBiezacejTable = $wskaznik->getWskPlynnosciBiezacej();
+
+    if ($wskPlynnosciBiezacejTable[0] > 2.0) {
+        $templateWord->setValue('wsk_plynnosci_biezacej_0', $wsk_plynnosci_biezacej_wysoki[0]);
+        $templateWord->setValue('wsk_plynnosci_biezacej_1', $wsk_plynnosci_biezacej_wysoki[1]);
+        $templateWord->setValue('wsk_plynnosci_biezacej_2', $wsk_plynnosci_biezacej_wysoki[2]);
+    }
+
+    if ($wskPlynnosciBiezacejTable[0] >= 1.0 && $wskPlynnosciBiezacejTable[0] <= 2.0) {
+        $templateWord->setValue('wsk_plynnosci_biezacej_0', $wsk_plynnosci_biezacej_sredni[0]);
+        $templateWord->setValue('wsk_plynnosci_biezacej_1', $wsk_plynnosci_biezacej_sredni[1]);
+        $templateWord->setValue('wsk_plynnosci_biezacej_2', $wsk_plynnosci_biezacej_sredni[2]);
+    }
+
+    if ($wskPlynnosciBiezacejTable[0] < 1.0) {
+        $templateWord->setValue('wsk_plynnosci_biezacej_0', $wsk_plynnosci_biezacej_niski[0]);
+        $templateWord->setValue('wsk_plynnosci_biezacej_1', $wsk_plynnosci_biezacej_niski[1]);
+        $templateWord->setValue('wsk_plynnosci_biezacej_2', $wsk_plynnosci_biezacej_niski[2]);
+    }
+}
+
+/* Dotyczy: dynamika wskaźnika płynności bieżącej */
+function insertDynamikaWskPlynnosciBiezacej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_wsk_plynnosci_biezacej}
+    $dynamika_wsk_plynnosci_biezacej = array(
+        'korzystnym, rosnącym poziomie.',       //Dla wartości powyżej 1,20
+        'korzystnym, rosnącym poziomie.',       //Dla wartości 1,05 - 1,20
+        'stabilnym poziomie.',                  //Dla wartosci 0,95 - 1,05
+        'niekorzystnym, słabnącym poziomie.'    //Dla wartosci ponizej 0,95
+    );
+    $wskPlynnosciBiezacejTable = $wskaznik->getWskPlynnosciBiezacej();
+    $dynamikaWskPlynnosciBiezacej = $wskPlynnosciBiezacejTable[0]/$wskPlynnosciBiezacejTable[1];
+
+    if ($dynamikaWskPlynnosciBiezacej > 1.20) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_biezacej', $dynamika_wsk_plynnosci_biezacej[0]);
+    }
+
+    if ($dynamikaWskPlynnosciBiezacej >= 1.05 && $dynamikaWskPlynnosciBiezacej <= 1.20) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_biezacej', $dynamika_wsk_plynnosci_biezacej[1]);
+    }
+
+    if ($dynamikaWskPlynnosciBiezacej >= 0.95 && $dynamikaWskPlynnosciBiezacej < 1.05) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_biezacej', $dynamika_wsk_plynnosci_biezacej[2]);
+    }
+
+    if ($dynamikaWskPlynnosciBiezacej < 0.95) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_biezacej', $dynamika_wsk_plynnosci_biezacej[3]);
+    }
+}
+
+/* Dotyczy: wskaźnik płynności szybkiej */
+function insertWskPlynnosciSzybkiej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${wsk_plynnosci_szybkiej}
+    $wsk_plynnosci_szybkiej = array(
+        'bardzo korzystnym poziomie.',  //Dla wartości powyżej 1,5
+        'korzystnym poziomie.',         //Dla wartości 0,8 - 1,5
+        'niekorzystnym poziomie.'       //Dla wartosci poniżej 0,8
+    );
+    $wskPlynnosciSzybkiejTable = $wskaznik->getWskPlynnosciSzybkiej();
+
+    if ($wskPlynnosciSzybkiejTable[0] > 1.5) {
+        $templateWord->setValue('wsk_plynnosci_szybkiej', $wsk_plynnosci_szybkiej[0]);
+    }
+
+    if ($wskPlynnosciSzybkiejTable[0] >= 0.8 && $wskPlynnosciSzybkiejTable[0] <= 1.5) {
+        $templateWord->setValue('wsk_plynnosci_szybkiej', $wsk_plynnosci_szybkiej[1]);
+    }
+
+    if ($wskPlynnosciSzybkiejTable[0] < 0.8) {
+        $templateWord->setValue('wsk_plynnosci_szybkiej', $wsk_plynnosci_szybkiej[2]);
+    }
+}
+
+/* Dotyczy: dynamika wskaźnik płynności szybkiej */
+function insertDynamikaWskPlynnosciSzybkiej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_wsk_plynnosci_szybkiej}
+    $yearsTable = $wskaznik->getYearsTabel();
+    $rok = current($yearsTable);
+    $wskPlynnosciSzybkiejTable = $wskaznik->getWskPlynnosciSzybkiej();
+    $dynamikaWskPlynnosciSzybkiej = $wskPlynnosciSzybkiejTable[0]/$wskPlynnosciSzybkiejTable[1];
+    $dynamika_wsk_plynnosci_szybkiej = array(
+        "Dynamika w $rok roku na płynności szybkiej była na korzystnym poziomie i wyniosła (".number_format($dynamikaWskPlynnosciSzybkiej,2,',',' ').")%.",     //Dla wartości powyżej 1,20
+        "Dynamika w $rok roku na płynności szybkiej była na dość korzystnym poziomie i wyniosła (".number_format($dynamikaWskPlynnosciSzybkiej,2,',',' ').")%.",//Dla wartości 1,05 - 1,2
+        "Zmiany wartości wskaźnika płynności szybkiej w $rok są na niewielkim poziomie, gdyż nie przekraczają 5% odchyleń od wartości z roku poprzedniego.",    //Dla wartości 0,95 - 1,05
+        "Dynamika w $rok roku na płynności szybkiej była na niekorzystnym poziomie i wyniosła (".number_format($dynamikaWskPlynnosciSzybkiej,2,',',' ').")%."   //Dla wartości poniżej 0,95
+    );
+
+    if ($dynamikaWskPlynnosciSzybkiej > 1.20) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_szybkiej', $dynamika_wsk_plynnosci_szybkiej[0]);
+    }
+
+    if ($dynamikaWskPlynnosciSzybkiej >= 1.05 && $dynamikaWskPlynnosciSzybkiej <= 1.20) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_szybkiej', $dynamika_wsk_plynnosci_szybkiej[1]);
+    }
+
+    if ($dynamikaWskPlynnosciSzybkiej >= 0.95 && $dynamikaWskPlynnosciSzybkiej < 1.05) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_szybkiej', $dynamika_wsk_plynnosci_szybkiej[2]);
+    }
+
+    if ($dynamikaWskPlynnosciSzybkiej < 0.95) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_szybkiej', $dynamika_wsk_plynnosci_szybkiej[3]);
+    }
+}
+
+/* Dotyczy: wskaźnik płynności gotówkowej */
+function insertWskPlynnosciGotowkowej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${wsk_plynnosci_gotowkowej}
+    //Dla wartości powyżej 1,0
+    $wsk_plynnosci_gotowkowej_wysoki = array(
+        '',
+        'maksymalnej',
+        '',
+        'wszystkie zobowiązania'
+    );
+
+    //Dla wartości 0,25 - 1,0
+    $wsk_plynnosci_gotowkowej_sredni = array(
+        '',
+        'dużej',
+        '',
+        'znaczną część zobowiązań'
+    );
+
+    //Dla wartosci poniżej 0,25
+    $wsk_plynnosci_gotowkowej_niski = array(
+        'nie',
+        'znacznej',
+        'nie',
+        'istotnej części zobowiązań'
+    );
+    $wskPlynnosciGotowkowejTable = $wskaznik->getWskPlynnosciGotowka();
+
+    if ($wskPlynnosciGotowkowejTable[0] > 1.0) {
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_0', $wsk_plynnosci_gotowkowej_wysoki[0]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_1', $wsk_plynnosci_gotowkowej_wysoki[1]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_2', $wsk_plynnosci_gotowkowej_wysoki[2]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_3', $wsk_plynnosci_gotowkowej_wysoki[3]);
+    }
+
+    if ($wskPlynnosciGotowkowejTable[0] >= 0.25 && $wskPlynnosciGotowkowejTable[0] <= 1.0) {
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_0', $wsk_plynnosci_gotowkowej_sredni[0]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_1', $wsk_plynnosci_gotowkowej_sredni[1]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_2', $wsk_plynnosci_gotowkowej_sredni[2]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_3', $wsk_plynnosci_gotowkowej_sredni[3]);
+    }
+
+    if ($wskPlynnosciGotowkowejTable[0] < 0.25) {
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_0', $wsk_plynnosci_gotowkowej_niski[0]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_1', $wsk_plynnosci_gotowkowej_niski[1]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_2', $wsk_plynnosci_gotowkowej_niski[2]);
+        $templateWord->setValue('wsk_plynnosci_gotowkowej_3', $wsk_plynnosci_gotowkowej_niski[3]);
+    }
+}
+
+/* Dotyczy: dynamika wskaźnik płynności gotówkowej */
+function insertDynamikaWskPlynnosciGotowkowej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik, Bilans $bilans) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_wsk_plynnosci_gotowkowej}
+    $yearsTable = $wskaznik->getYearsTabel();
+    $rok = current($yearsTable);;
+    $firma = $bilans->getFirma();
+    $wskPlynnosciGotowkowejTable = $wskaznik->getWskPlynnosciGotowka();
+    $dynamikaWskPlynnosciGotowkowej = $wskPlynnosciGotowkowejTable[0]/$wskPlynnosciGotowkowejTable[1];
+    $dynamika_wsk_plynnosci_gotowkowej = array(
+        "Ważną obserwacją są wyniki dynamiki w $rok dla płynności gotówkowej, które wskazują, że $firma zwiększyła w istotny sposób wartość najistotniejszego wskaźnika płynności.",                                    //Dla wartości powyżej 1,20
+        "Ważną obserwacją są wyniki dynamiki w $rok dla płynności gotówkowej, które wskazują, że $firma zwiększyła wartość najistotniejszego wskaźnika płynności.",                                                     //Dla wartości 1,05 - 1,2
+        "Zmiany wartości wskaźnika płynności gotówkowej w $rok są na niewielkim poziomie, gdyż nie przekraczają 5% odchyleń od wartości z roku poprzedniego.",                                                          //Dla wartości 0,95 - 1,05
+        "Ważną obserwacją są wyniki dynamiki w $rok dla płynności gotówkowej, które wskazują, że $firma zmniejszyła wartość najistotniejszego wskaźnika płynności. Nie możemy uznać tego zjawiska za pozytywny sygnał." //Dla wartości poniżej 0,95
+    );
+
+    if ($dynamikaWskPlynnosciGotowkowej > 1.20) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_gotowkowej', $dynamika_wsk_plynnosci_gotowkowej[0]);
+    }
+
+    if ($dynamikaWskPlynnosciGotowkowej >= 1.05 && $dynamikaWskPlynnosciGotowkowej <= 1.20) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_gotowkowej', $dynamika_wsk_plynnosci_gotowkowej[1]);
+    }
+
+    if ($dynamikaWskPlynnosciGotowkowej >= 0.95 && $dynamikaWskPlynnosciGotowkowej < 1.05) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_gotowkowej', $dynamika_wsk_plynnosci_gotowkowej[2]);
+    }
+
+    if ($dynamikaWskPlynnosciGotowkowej < 0.95) {
+        $templateWord->setValue('dynamika_wsk_plynnosci_gotowkowej', $dynamika_wsk_plynnosci_gotowkowej[3]);
+    }
+}
+
+/* SPRAWNOŚĆ W ZARZĄDZANIU */
+/* Dotyczy: wskaźnik rotacji należności */
+function insertWskRotacjiNaleznosci(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik, Bilans $bilans) {
+    //W szablonie - ${wsk_rotacji_naleznosci}
+    $firma = $bilans->getFirma();
+    $wsk_rotacji_naleznosci = array(
+        "niekorzystnym poziomie, gdyż wskazują na problemy z inkasowaniem środków od klientów przez $firma.",  //Dla wartości powyżej 180
+        "umiarkowanym poziomie.",                                                                              //Dla wartości 90 - 180
+        "korzystnym poziomie, gdyż wskazują na szybkie inkasowanie środków od klientów przez $firma."          //Dla wartosci poniżej 90
+    );
+    $wskRotacjiNaleznosciTable = $wskaznik->getRotacjaNaleznosciWdniach();
+
+    if ($wskRotacjiNaleznosciTable[0] > 180) {
+        $templateWord->setValue('wsk_rotacji_naleznosci', $wsk_rotacji_naleznosci[0]);
+    }
+
+    if ($wskRotacjiNaleznosciTable[0] >= 90 && $wskRotacjiNaleznosciTable[0] <= 180) {
+        $templateWord->setValue('wsk_rotacji_naleznosci', $wsk_rotacji_naleznosci[1]);
+    }
+
+    if ($wskRotacjiNaleznosciTable[0] < 90) {
+        $templateWord->setValue('wsk_rotacji_naleznosci', $wsk_rotacji_naleznosci[2]);
+    }
+}
+
+/* Dotyczy: dynamika wskaźnik rotacji należności */
+function insertDynamikaWskRotacjiNaleznosci(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_wsk_rotacji_naleznosci}
+    $wskRotacjiNaleznosciTable = $wskaznik->getRotacjaNaleznosciWdniach();
+    $dynamikaWskRotacjiNaleznosci = $wskRotacjiNaleznosciTable[0]/$wskRotacjiNaleznosciTable[1];
+    $dynamika_wsk_rotacji_naleznosci = array(
+        "niekorzystnym poziomie, gdyż zauważono istotne zwiększenie wartości na rotacji należności. Jest to negatywny sygnał.",  //Dla wartości powyżej 1,20
+        "niekorzystnym poziomie, gdyż zauważono  zwiększenie wartości na rotacji należności. Jest to negatywny sygnał.",         //Dla wartości 1,05 - 1,20
+        "niewielkim poziomie, gdyż nie przekraczają 5% odchyleń od wartości z roku poprzedniego.",                               //Dla wartosci 0,95 - 1,05
+        "korzystnym poziomie, gdyż zauważono  zmniejszenie wartości na rotacji należności. Jest to pozytywny sygnał."            //Dla wartosci poniżej 0,95
+    );
+
+    if ($dynamikaWskRotacjiNaleznosci > 1.20) {
+        $templateWord->setValue('dynamika_wsk_rotacji_naleznosci', $dynamika_wsk_rotacji_naleznosci[0]);
+    }
+
+    if ($dynamikaWskRotacjiNaleznosci >= 1.05 && $dynamikaWskRotacjiNaleznosci <= 1.20) {
+        $templateWord->setValue('dynamika_wsk_rotacji_naleznosci', $dynamika_wsk_rotacji_naleznosci[1]);
+    }
+
+    if ($dynamikaWskRotacjiNaleznosci >= 0.95 && $dynamikaWskRotacjiNaleznosci < 1.05) {
+        $templateWord->setValue('dynamika_wsk_rotacji_naleznosci', $dynamika_wsk_rotacji_naleznosci[2]);
+    }
+
+    if ($dynamikaWskRotacjiNaleznosci < 0.95) {
+        $templateWord->setValue('dynamika_wsk_rotacji_naleznosci', $dynamika_wsk_rotacji_naleznosci[3]);
+    }
+}
+
+/* Dotyczy: wskaźnik rotacji zobowiązań */
+function insertWskRotacjiZobowiazan(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${wsk_rotacji_zobowiazan}
+    $wsk_rotacji_zobowiazan = array(
+        "niekorzystnym poziomie, gdyż wskazują na bardzo wolne spłacanie zobowiązań przez", //Dla wartości powyżej 180
+        "niekorzystnym poziomie, gdyż wskazują na dość wolne spłacanie zobowiązań przez",   //Dla wartości 90 - 180
+        "korzystnym poziomie, gdyż wskazują na szybkie spłacanie zobowiązań przez"          //Dla wartosci poniżej 90
+    );
+    $wskRotacjiZobowiazanTable = $wskaznik->getRotacjaZobowiazanWdniach();
+
+    if ($wskRotacjiZobowiazanTable[0] > 180) {
+        $templateWord->setValue('wsk_rotacji_zobowiazan', $wsk_rotacji_zobowiazan[0]);
+    }
+
+    if ($wskRotacjiZobowiazanTable[0] >= 90 && $wskRotacjiZobowiazanTable[0] <= 180) {
+        $templateWord->setValue('wsk_rotacji_zobowiazan', $wsk_rotacji_zobowiazan[1]);
+    }
+
+    if ($wskRotacjiZobowiazanTable[0] < 90) {
+        $templateWord->setValue('wsk_rotacji_zobowiazan', $wsk_rotacji_zobowiazan[2]);
+    }
+}
+
+/* Dotyczy: dynamika wskaźnik rotacji zobowiązań */
+function insertDynamikaWskRotacjiZobowiazan(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_wsk_rotacji_zobowiazan}
+    $yearsTable = $wskaznik->getYearsTabel();
+    $rok = current($yearsTable);
+    $wskRotacjiZobowiazanTable = $wskaznik->getRotacjaZobowiazanWdniach();
+    $dynamikaWskRotacjiZobowiazan = $wskRotacjiZobowiazanTable[0]/$wskRotacjiZobowiazanTable[1];
+    $dynamika_wsk_rotacji_zobowiazan = array(
+        "Wartości wskaźnika rotacji zobowiązań w $rok zostały istotnie podniesione. Jest to negatywny sygnał, gdyż jednocześnie wzrastają zagrożenia na okresy kolejne.",//Dla wartości powyżej 1,20
+        "Wartości wskaźnika rotacji zobowiązań w $rok zostały podniesione. Jest to negatywny sygnał, gdyż jednocześnie wzrastają zagrożenia na okresy kolejne.",         //Dla wartości 1,05 - 1,20
+        "Zmiany wartości wskaźnika rotacji zobowiązań w $rok są na niewielkim poziomie, gdyż nie przekraczają 5% odchyleń od wartości z roku poprzedniego.",             //Dla wartosci 0,95 - 1,05
+        "Wartości wskaźnika rotacji zobowiązań w $rok zostały zmniejszone. Jest to pozytywny sygnał, gdyż jednocześnie obniżają się zagrożenia na okresy kolejne."       //Dla wartosci poniżej 0,95
+    );
+
+    if ($dynamikaWskRotacjiZobowiazan > 1.20) {
+        $templateWord->setValue('dynamika_wsk_rotacji_zobowiazan', $dynamika_wsk_rotacji_zobowiazan[0]);
+    }
+
+    if ($dynamikaWskRotacjiZobowiazan >= 1.05 && $dynamikaWskRotacjiZobowiazan <= 1.20) {
+        $templateWord->setValue('dynamika_wsk_rotacji_zobowiazan', $dynamika_wsk_rotacji_zobowiazan[1]);
+    }
+
+    if ($dynamikaWskRotacjiZobowiazan >= 0.95 && $dynamikaWskRotacjiZobowiazan < 1.05) {
+        $templateWord->setValue('dynamika_wsk_rotacji_zobowiazan', $dynamika_wsk_rotacji_zobowiazan[2]);
+    }
+
+    if ($dynamikaWskRotacjiZobowiazan < 0.95) {
+        $templateWord->setValue('dynamika_wsk_rotacji_zobowiazan', $dynamika_wsk_rotacji_zobowiazan[3]);
+    }
+}
+
+/* Dotyczy: cykl konwersji gotówkowej */
+function insertCyklKonwersjiGotowkowej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${cykl_konwersji_gotowkowej}
+    $cykl_konwersji_gotowkowej = array(
+        "własnych, o czym świadczy dodatnia wartość.", //Dla wartości powyżej 0
+        "dostawców, o czym świadczy ujemna wartość."   //Dla wartości poniżej 0
+    );
+    $cyklKonwersjiGotowkowejTable = $wskaznik->getCyklKonwersjiGotowkowej();
+
+    if ($cyklKonwersjiGotowkowejTable[0] >= 0) {
+        $templateWord->setValue('cykl_konwersji_gotowkowej', $cykl_konwersji_gotowkowej[0]);
+    }
+
+    if ($cyklKonwersjiGotowkowejTable[0] < 0) {
+        $templateWord->setValue('cykl_konwersji_gotowkowej', $cykl_konwersji_gotowkowej[1]);
+    }
+}
+
+/* Dotyczy: dynamika wskaźnik cykl konwersji gotówkowej */
+function insertDynamikaCyklKonwersjiGotowkowej(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik, Bilans $bilans) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_cykl_konwersji_gotowkowej}
+    $firma = $bilans->getFirma();
+    $yearsTable = $wskaznik->getYearsTabel();
+    $rok = current($yearsTable);
+    $cyklKonwersjiGotowkowejTable = $wskaznik->getCyklKonwersjiGotowkowej();
+    $dynamikaCyklKonwersjiGotowkowej = $cyklKonwersjiGotowkowejTable[0]/$cyklKonwersjiGotowkowejTable[1];
+    $dynamika_cykl_konwersji_gotowkowej = array(
+        "Wartości wskaźnika cyklu konwersji gotówkowej w $rok zostały podniesione. Jest to pozytywny sygnał, gdyż wskazuje na większe finansowanie cyklu handlowego przez $firma.",         //Dla wartości powyżej 1,20
+        "Wartości wskaźnika cyklu konwersji gotówkowej w $rok zostały podniesione. Jest to pozytywny sygnał, gdyż wskazuje na większe finansowanie cyklu handlowego przez $firma.",         //Dla wartości 1,05 - 1,20
+        "Zmiany wartości wskaźnika cyklu konwersji gotówkowej w $rok są na niewielkim poziomie, gdyż nie przekraczają 5% odchyleń od wartości z roku poprzedniego.",                        //Dla wartosci 0,95 - 1,05
+        "Wartości wskaźnika cyklu konwersji gotówkowej w $rok zostały obniżone. Jest to negatywny sygnał, gdyż wskazuje na większe finansowanie cyklu handlowego przez dostawców $firma."   //Dla wartosci poniżej 0,95
+    );
+
+    if ($dynamikaCyklKonwersjiGotowkowej > 1.20) {
+        $templateWord->setValue('dynamika_cykl_konwersji_gotowkowej', $dynamika_cykl_konwersji_gotowkowej[0]);
+    }
+
+    if ($dynamikaCyklKonwersjiGotowkowej >= 1.05 && $dynamikaCyklKonwersjiGotowkowej <= 1.20) {
+        $templateWord->setValue('dynamika_cykl_konwersji_gotowkowej', $dynamika_cykl_konwersji_gotowkowej[1]);
+    }
+
+    if ($dynamikaCyklKonwersjiGotowkowej >= 0.95 && $dynamikaCyklKonwersjiGotowkowej < 1.05) {
+        $templateWord->setValue('dynamika_cykl_konwersji_gotowkowej', $dynamika_cykl_konwersji_gotowkowej[2]);
+    }
+
+    if ($dynamikaCyklKonwersjiGotowkowej < 0.95) {
+        $templateWord->setValue('dynamika_cykl_konwersji_gotowkowej', $dynamika_cykl_konwersji_gotowkowej[3]);
+    }
+}
+
+/* Dotyczy: ROI */
+function insertROI(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${roi}
+    $roi = array(
+        "bardzo wysokim poziomie. Wartości te wskazują na bardzo wysoki zwrot na posiadanych przez Spółkę aktywach.", //Dla wartości powyżej 0,20
+        "wysokim poziomie. Wartości te wskazują na wysoki zwrot na posiadanych przez Spółkę aktywach.",               //Dla wartości 0,05 - 0,20
+        "umiarkowanym poziomie. Wartości te wskazują na niezbyt wysoki zwrot na posiadanych przez Spółkę aktywach.",  //Dla wartości 0,00 - 0,05
+        "słabym poziomie. Wartości te wskazują na ujemny wynik na zwrocie na posiadanych przez Spółkę aktywach."      //Dla wartości poniżej 0,0
+    );
+    $roiTable = $wskaznik->getROI();
+
+    if ($roiTable[0] > 0.20) {
+        $templateWord->setValue('roi', $roi[0]);
+    }
+
+    if ($roiTable[0] >= 0.05 && $roiTable[0] <= 0.20) {
+        $templateWord->setValue('roi', $roi[1]);
+    }
+
+    if ($roiTable[0] >= 0.00 && $roiTable[0] < 0.05) {
+        $templateWord->setValue('roi', $roi[2]);
+    }
+
+    if ($roiTable[0] < 0.00) {
+        $templateWord->setValue('roi', $roi[3]);
+    }
+}
+
+/* Dotyczy: ROE */
+function insertROE(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${roe}
+    $roe = array(
+        "bardzo wysokim poziomie. Wartość tego wskaźnika pozwala na pozytywne ocenienie", //Dla wartości powyżej 0,20
+        "wysokim poziomie. Wartość tego wskaźnika pozwala na pozytywne ocenienie",        //Dla wartości 0,05 - 0,20
+        "umiarkowanym poziomie. Wartość tego wskaźnika pozwala na pozytywną ocenę",       //Dla wartości 0,00 - 0,05
+        "niekorzystnym poziomie. Wartość tego wskaźnika nie pozwala na pozytywną ocenę"   //Dla wartości poniżej 0,0
+    );
+    $roeTable = $wskaznik->getROE();
+
+    if ($roeTable[0] > 0.20) {
+        $templateWord->setValue('roe', $roe[0]);
+    }
+
+    if ($roeTable[0] >= 0.05 && $roeTable[0] <= 0.20) {
+        $templateWord->setValue('roe', $roe[1]);
+    }
+
+    if ($roeTable[0] >= 0.00 && $roeTable[0] < 0.05) {
+        $templateWord->setValue('roe', $roe[2]);
+    }
+
+    if ($roeTable[0] < 0.00) {
+        $templateWord->setValue('roe', $roe[3]);
+    }
+}
+
+/* Dotyczy: dynamika ROE */
+function insertDynamikaROE(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_roe}
+    $roeTable = $wskaznik->getROE();
+    $dynamikaROE = $roeTable[0]/$roeTable[1];
+    $dynamika_roe = array(
+        "znacznie zwiększyła zwrot z inwestycji właścicielskiej. Jest to korzystny sygnał wskazujący na znaczną poprawę sytuacji w tej firmie w tym względzie.",        //Dla wartości powyżej 1,20
+        "zwiększyła zwrot z inwestycji właścicielskiej. Jest to korzystny sygnał wskazujący na poprawę sytuacji w tej firmie w tym względzie.",                         //Dla wartości 1,00 - 1,20
+        "zmniejszyła zwrot z inwestycji właścicielskiej. Jest to niekorzystny sygnał wskazujący na pogorszenie sytuacji w tej firmie w tym względzie.",                 //Dla wartosci 0,80 - 1,00
+        "znacznie zmniejszyła zwrot z inwestycji właścicielskiej. Jest to niekorzystny sygnał wskazujący na znaczne pogorszenie sytuacji w tej firmie w tym względzie." //Dla wartosci poniżej 0,80
+    );
+
+    if ($dynamikaROE > 1.20) {
+        $templateWord->setValue('dynamika_roe', $dynamika_roe[0]);
+    }
+
+    if ($dynamikaROE >= 1.00 && $dynamikaROE <= 1.20) {
+        $templateWord->setValue('dynamika_roe', $dynamika_roe[1]);
+    }
+
+    if ($dynamikaROE >= 0.80 && $dynamikaROE < 1.00) {
+        $templateWord->setValue('dynamika_roe', $dynamika_roe[2]);
+    }
+
+    if ($dynamikaROE < 0.80) {
+        $templateWord->setValue('dynamika_roe', $dynamika_roe[3]);
+    }
+}
+
+/* Dotyczy: rentowność przychodów */
+function insertRentownoscPrzychodow(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${rentownosc_przychodow}
+    $rentownosc_przychodow = array(
+        "bardzo korzystne wartości. Rentowność przychodów firmy jest na wysokim poziomie. Wyniki stanowią podstawę do wydania pozytywnej opinii nt. tej firmy.",        //Dla wartości powyżej 0,20
+        "korzystne wartości. Rentowność przychodów firmy jest na dość wysokim poziomie. Wyniki stanowią podstawę do wydania pozytywnej opinii nt. tej firmy.",          //Dla wartości 0,05 - 0,20
+        "umiarkowane wartości. Rentowność przychodów firmy jest na dość niskim poziomie. Wyniki stanowią jednak podstawę do wydania pozytywnej opinii nt. tej firmy.",  //Dla wartości 0,00 - 0,05
+        "niekorzystne wartości. Rentowność przychodów firmy jest na niskim poziomie. Wyniki stanowią podstawę do wydania negatywnej opinii nt. tej firmy."              //Dla wartości poniżej 0,0
+    );
+    $podsumowanie_rentownosc_przychodow = array(
+        "bardzo korzystne wartości na wskaźniku rentowności. Rentowność przychodów firmy jest na wysokim poziomie. Podsumowując wyniki rentowności badanego podmiotu należy stwierdzić, że osiągnął on bardzo korzystne wyniki rentowności. Wyniki stanowią podstawę do wydania pozytywnej opinii nt. tej firmy.", //Dla wartości powyżej 0,20
+        "korzystne wartości na wskaźniku rentowności. Rentowność przychodów firmy jest na dość wysokim poziomie. Podsumowując wyniki rentowności badanego podmiotu należy stwierdzić, że osiągnął on korzystne wyniki rentowności. Wyniki stanowią podstawę do wydania pozytywnej opinii nt. tej firmy.",          //Dla wartości 0,05 - 0,20
+        "umiarkowane wartości na wskaźniku rentowności. Rentowność przychodów firmy jest na dość niskim poziomie. Podsumowując wyniki rentowności badanego podmiotu należy stwierdzić, że osiągnął on umiarkowane wyniki rentowności. Wyniki stanowią jednak podstawę do wydania pozytywnej opinii nt. tej firmy.",//Dla wartości 0,00 - 0,05
+        "niekorzystne wartości na wskaźniku rentowności. Rentowność przychodów firmy jest na niskim poziomie. Podsumowując wyniki rentowności badanego podmiotu należy stwierdzić, że osiągnął on niekorzystne wyniki rentowności. Wyniki stanowią podstawę do wydania negatywnej opinii nt. tej firmy."           //Dla wartości poniżej 0,0
+    );
+    $rentownoscPrzychodowTable = $wskaznik->getZyskownoscPrzychodow();
+
+    if ($rentownoscPrzychodowTable[0] > 0.20) {
+        $templateWord->setValue('rentownosc_przychodow', $rentownosc_przychodow[0]);
+        $templateWord->setValue('podsumowanie_rentownosc_przychodow', $podsumowanie_rentownosc_przychodow[0]);
+    }
+
+    if ($rentownoscPrzychodowTable[0] >= 0.05 && $rentownoscPrzychodowTable[0] <= 0.20) {
+        $templateWord->setValue('rentownosc_przychodow', $rentownosc_przychodow[1]);
+        $templateWord->setValue('podsumowanie_rentownosc_przychodow', $podsumowanie_rentownosc_przychodow[1]);
+    }
+
+    if ($rentownoscPrzychodowTable[0] >= 0.00 && $rentownoscPrzychodowTable[0] < 0.05) {
+        $templateWord->setValue('rentownosc_przychodow', $rentownosc_przychodow[2]);
+        $templateWord->setValue('podsumowanie_rentownosc_przychodow', $podsumowanie_rentownosc_przychodow[2]);
+    }
+
+    if ($rentownoscPrzychodowTable[0] < 0.00) {
+        $templateWord->setValue('rentownosc_przychodow', $rentownosc_przychodow[3]);
+        $templateWord->setValue('podsumowanie_rentownosc_przychodow', $podsumowanie_rentownosc_przychodow[3]);
+    }
+}
+
+/* Dotyczy: Pokrycia aktywów  */
+function insertPokrycieAktywow(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${pokrycie_aktywow}
+    $pokrycie_aktywow = array(
+        "bardzo bezpiecznym poziomie. Wskazuje na bardzo duże zaangażowanie właścicielskie w proces finansowania składników majątku Spółki.",   //Dla wartości powyżej 1,00
+        "bezpiecznym poziomie. Wskazuje na duże zaangażowanie właścicielskie w proces finansowania składników majątku Spółki.",                 //Dla wartości 0,80 - 1,00
+        "średnim poziomie. Wskazuje na umiarkowane zaangażowanie właścicielskie w proces finansowania składników majątku Spółki.",              //Dla wartości 0,40 - 0,80
+        "niebezpiecznym poziomie. Wskazuje na małe zaangażowanie właścicielskie w proces finansowania składników majątku Spółki."               //Dla wartości poniżej 0,40
+    );
+    $pokrycieAktywowTable = $wskaznik->getPokrycieAktywow();
+
+    if ($pokrycieAktywowTable[0] > 1.00) {
+        $templateWord->setValue('pokrycie_aktywow', $pokrycie_aktywow[0]);
+    }
+
+    if ($pokrycieAktywowTable[0] >= 0.80 && $pokrycieAktywowTable[0] <= 1.00) {
+        $templateWord->setValue('pokrycie_aktywow', $pokrycie_aktywow[1]);
+    }
+
+    if ($pokrycieAktywowTable[0] >= 0.40 && $pokrycieAktywowTable[0] < 0.80) {
+        $templateWord->setValue('pokrycie_aktywow', $pokrycie_aktywow[2]);
+    }
+
+    if ($pokrycieAktywowTable[0] < 0.40) {
+        $templateWord->setValue('pokrycie_aktywow', $pokrycie_aktywow[3]);
+    }
+}
+
+/* Dotyczy: dynamika pokrycia aktywów  */
+function insertDynamikaPokryciaAktywow(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_pokrycia_aktywow}
+    $pokrycieAktywowTable = $wskaznik->getPokrycieAktywow();
+    $dynamikaPokryciaAktywow = $pokrycieAktywowTable[0]/$pokrycieAktywowTable[1];
+    $dynamika_pokrycia_aktywow = array(
+        "bardzo korzystnym poziomie, gdyż wskazuje na istotne zwiększenie pokrycia aktywów przez kapitały własne.",    //Dla wartości powyżej 1,20
+        "korzystnym poziomie, gdyż wskazuje na zwiększenie pokrycia aktywów przez kapitały własne.",                   //Dla wartości 1,00 - 1,20
+        "niekorzystnym poziomie, gdyż wskazuje na zmniejszenie pokrycia aktywów przez kapitały własne.",               //Dla wartosci 0,80 - 1,00
+        "bardzo niekorzystnym poziomie, gdyż wskazuje na znaczne zmniejszenie pokrycia aktywów przez kapitały własne." //Dla wartosci poniżej 0,80
+    );
+
+    if ($dynamikaPokryciaAktywow > 1.20) {
+        $templateWord->setValue('dynamika_pokrycia_aktywow', $dynamika_pokrycia_aktywow[0]);
+    }
+
+    if ($dynamikaPokryciaAktywow >= 1.00 && $dynamikaPokryciaAktywow <= 1.20) {
+        $templateWord->setValue('dynamika_pokrycia_aktywow', $dynamika_pokrycia_aktywow[1]);
+    }
+
+    if ($dynamikaPokryciaAktywow >= 0.80 && $dynamikaPokryciaAktywow < 1.00) {
+        $templateWord->setValue('dynamika_pokrycia_aktywow', $dynamika_pokrycia_aktywow[2]);
+    }
+
+    if ($dynamikaPokryciaAktywow < 0.80) {
+        $templateWord->setValue('dynamika_pokrycia_aktywow', $dynamika_pokrycia_aktywow[3]);
+    }
+}
+
+/* Dotyczy: zadłużenie ogólne */
+function insertZadluzenieOgolne(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${zadluzenie_ogolne}
+    $zadluzenie_ogolne = array(
+        "bezpiecznym poziomie. Wartość tego wskaźnika pozwala na pozytywne ocenienie",      //Dla wartości poniżej 1,00
+        "umiarkowanym poziomie. Wartość tego wskaźnika pozwala na pozytywne ocenienie",     //Dla wartości 1,00 - 1,20
+        "niekorzystnym poziomie. Wartość tego wskaźnika nie pozwala na pozytywne ocenienie" //Dla wartości powyżej 1,20
+    );
+    $zadluzenieOgolneTable = $wskaznik->getZadluzenieOgolne();
+
+    if ($zadluzenieOgolneTable[0] < 1.00) {
+        $templateWord->setValue('zadluzenie_ogolne', $zadluzenie_ogolne[0]);
+    }
+
+    if ($zadluzenieOgolneTable[0] >= 1.00 && $zadluzenieOgolneTable[0] <= 1.20) {
+        $templateWord->setValue('zadluzenie_ogolne', $zadluzenie_ogolne[1]);
+    }
+
+    if ($zadluzenieOgolneTable[0] > 1.20) {
+        $templateWord->setValue('zadluzenie_ogolne', $zadluzenie_ogolne[2]);
+    }
+}
+
+/* Dotyczy: dynamika zadłużenia ogólnego */
+function insertDynamikaZadluzeniaOgolnego(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_zadluzenia_ogolnego}
+    $zadluzenieOgolneTable = $wskaznik->getZadluzenieOgolne();
+    $dynamikaZadluzeniaOgolnego = $zadluzenieOgolneTable[0]/$zadluzenieOgolneTable[1];
+    $dynamika_zadluzenia_ogolnego = array(
+        "dość niekorzystnym poziomie, gdyż wskazuje na znaczne zwiększenie poziomu zadłużenia analizowanego podmiotu.",//Dla wartości powyżej 1,20
+        "niekorzystnym poziomie, gdyż wskazuje na zwiększenie poziomu zadłużenia analizowanego podmiotu.",             //Dla wartości 1,00 - 1,20
+        "korzystnym poziomie, gdyż wskazuje na zmniejszenie poziomu zadłużenia analizowanego podmiotu.",               //Dla wartosci 0,80 - 1,00
+        "bardzo korzystnym poziomie, gdyż wskazuje na znaczne zmniejszenie poziomu zadłużenia analizowanego podmiotu." //Dla wartosci poniżej 0,80
+    );
+
+    if ($dynamikaZadluzeniaOgolnego > 1.20) {
+        $templateWord->setValue('dynamika_zadluzenia_ogolnego', $dynamika_zadluzenia_ogolnego[0]);
+    }
+
+    if ($dynamikaZadluzeniaOgolnego >= 1.00 && $dynamikaZadluzeniaOgolnego <= 1.20) {
+        $templateWord->setValue('dynamika_zadluzenia_ogolnego', $dynamika_zadluzenia_ogolnego[1]);
+    }
+
+    if ($dynamikaZadluzeniaOgolnego >= 0.80 && $dynamikaZadluzeniaOgolnego < 1.00) {
+        $templateWord->setValue('dynamika_zadluzenia_ogolnego', $dynamika_zadluzenia_ogolnego[2]);
+    }
+
+    if ($dynamikaZadluzeniaOgolnego < 0.80) {
+        $templateWord->setValue('dynamika_zadluzenia_ogolnego', $dynamika_zadluzenia_ogolnego[3]);
+    }
+}
+
+/* Dotyczy: pokrycie aktywów trwałych */
+function insertPokrycieAktywowTrwalych(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${pokrycie_aktywow_trwalych}
+    //W szablonie - ${pokrycie_aktywow_trwalych_2}
+    //W szablonie - ${pokrycie_aktywow_trwalych_3}
+    $pokrycie_aktywow_trwalych = array(
+        "małym stopniu pochodzi od właściciela. Aktualnie finansowanie zewnętrzne jest znacznie wyższe od finansowania udzielonego przez właściciela. Jest to niekorzystny sygnał i nie pozwala na pozytywne ocenienie badanego podmiotu.", //Dla wartości poniżej 0,80
+        "umiarkowanym stopniu pochodzi od właściciela. Aktualnie finansowanie zewnętrzne jest wyższe od finansowania udzielonego przez właściciela. Jest to niekorzystny sygnał i nie pozwala na pozytywne ocenienie badanego podmiotu.",   //Dla wartości 0,80 - 1,00
+        "dużym stopniu pochodzi od właściciela. Aktualnie finansowanie zewnętrzne jest niższe od finansowania udzielonego przez właściciela. Jest to korzystny sygnał i pozwala na pozytywne ocenienie badanego podmiotu.",                 //Dla wartości 1,00 - 1,20
+        "największym stopniu pochodzi od właściciela. Aktualnie finansowanie zewnętrzne jest zasadniczo niższe od finansowania udzielonego przez właściciela. Jest to korzystny sygnał i pozwala na pozytywne ocenienie badanego podmiotu." //Dla wartości powyżej 1,20
+    );
+    $procentPokryciaTable = $wskaznik->getAktywaTrwaleProcent();
+    $pokrycie_aktywow_trwalych_2 = array(
+        "dobre wartości na tym wskaźniku, gdyż wskazują",       //Dla wartości powyżej 1,00
+        "całą wartość",                                         //Dla wartości powyżej 1,00
+        "słabe wartości na tym wskaźniku, gdyż nie pozwalają",  //Dla wartości poniżej 1,00
+        "".number_format($procentPokryciaTable[0],2,',',' ')."% wartości"//Dla wartości poniżej 1,00
+    );
+    $pokrycieAktywowTrwalychTable = $wskaznik->getPokrycieMajatkuTrwalego();
+
+    if ($pokrycieAktywowTrwalychTable[0] < 0.80) {
+        $templateWord->setValue('pokrycie_aktywow_trwalych', $pokrycie_aktywow_trwalych[0]);
+    }
+
+    if ($pokrycieAktywowTrwalychTable[0] >= 0.80 && $pokrycieAktywowTrwalychTable[0] <= 1.00) {
+        $templateWord->setValue('pokrycie_aktywow_trwalych', $pokrycie_aktywow_trwalych[1]);
+    }
+
+    if ($pokrycieAktywowTrwalychTable[0] > 1.00 && $pokrycieAktywowTrwalychTable[0] <= 1.20) {
+        $templateWord->setValue('pokrycie_aktywow_trwalych', $pokrycie_aktywow_trwalych[2]);
+    }
+
+    if ($pokrycieAktywowTrwalychTable[0] > 1.20) {
+        $templateWord->setValue('pokrycie_aktywow_trwalych', $pokrycie_aktywow_trwalych[3]);
+    }
+
+    if ($pokrycieAktywowTrwalychTable[0] >= 1.00) {
+        $templateWord->setValue('pokrycie_aktywow_trwalych_2', $pokrycie_aktywow_trwalych_2[0]);
+        $templateWord->setValue('pokrycie_aktywow_trwalych_3', $pokrycie_aktywow_trwalych_2[1]);
+    }
+
+    if ($pokrycieAktywowTrwalychTable[0] < 1.00) {
+        $templateWord->setValue('pokrycie_aktywow_trwalych_2', $pokrycie_aktywow_trwalych_2[2]);
+        $templateWord->setValue('pokrycie_aktywow_trwalych_3', $pokrycie_aktywow_trwalych_2[3]);
+    }
+}
+
+/* Dotyczy: dynamika pokrycia aktywów trwałych */
+function insertDynamikaPokryciaAktywowTrwalych(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego
+    //W szablonie - ${dynamika_pokrycia_aktywow_trwalych}
+    //W szablonie - ${dynamika_pokrycia_aktywow_trwalych_2}
+    $pokrycieAktywowTrwalychTable = $wskaznik->getPokrycieMajatkuTrwalego();
+    $dynamikaPokryciaAktywowTrwalych = $pokrycieAktywowTrwalychTable[0]/$pokrycieAktywowTrwalychTable[1];
+    $dynamika_pokrycia_aktywow_trwalych = array(
+        "zwiększył",    //Dla wartości powyżej 1,00
+        "podniosła stopień pokrycia aktywów trwałych kapitałami własnymi. Jest to korzystny sygnał.",    //Dla wartości powyżej 1,00
+        "zmniejszył",    //Dla wartości poniżej 1,00
+        "obniżyła stopień pokrycia aktywów trwałych kapitałami własnymi. Jest to niekorzystny sygnał."   //Dla wartości poniżej 1,00
+    );
+
+    if ($dynamikaPokryciaAktywowTrwalych >= 1.00) {
+        $templateWord->setValue('dynamika_pokrycia_aktywow_trwalych', $dynamika_pokrycia_aktywow_trwalych[0]);
+        $templateWord->setValue('dynamika_pokrycia_aktywow_trwalych_2', $dynamika_pokrycia_aktywow_trwalych[1]);
+    }
+
+    if ($dynamikaPokryciaAktywowTrwalych < 1.00) {
+        $templateWord->setValue('dynamika_pokrycia_aktywow_trwalych', $dynamika_pokrycia_aktywow_trwalych[2]);
+        $templateWord->setValue('dynamika_pokrycia_aktywow_trwalych_2', $dynamika_pokrycia_aktywow_trwalych[3]);
+    }
+}
+
+/* Dotyczy: Produktywność aktywów */
+function insertProduktywnoscAktywow(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //W szablonie - ${produktywnosc_aktywow}
+    $produktywnosc_aktywow = array(
+        "bardzo korzystne wyniki na produktywności. Wyniki tej firmy były na znacznie korzystniejszym poziomie niż w branży.",      //Dla wartości powyżej 1,00
+        "niezbyt korzystne wyniki na produktywności. Wyniki tej firmy były na niższym poziomie niż w branży."                       //Dla wartości poniżej 1,00
+    );
+    $produktywnoscAktywowTable = $wskaznik->getProduktywnoscAktywow();
+
+    if ($produktywnoscAktywowTable[0] >= 1.00) {
+        $templateWord->setValue('produktywnosc_aktywow', $produktywnosc_aktywow[0]);
+    }
+
+    if ($produktywnoscAktywowTable[0] < 1.00) {
+        $templateWord->setValue('produktywnosc_aktywow', $produktywnosc_aktywow[1]);
+    }
+}
+
+/* ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW TRWAŁYCH */
+function insertAnalizaAktywowTrwalych(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    $aktywaTrwaleProcentTable = $wskaznik->getAktywaTrwaleProcent();
+    $templateWord->setValue('aktywa_trwale_procent_2', number_format($aktywaTrwaleProcentTable[2],2,',',' '));
+    $templateWord->setValue('aktywa_trwale_procent_1', number_format($aktywaTrwaleProcentTable[1],2,',',' '));
+    $templateWord->setValue('aktywa_trwale_procent_0', number_format($aktywaTrwaleProcentTable[0],2,',',' '));
+    $roznica = $aktywaTrwaleProcentTable[0] - $aktywaTrwaleProcentTable[1];
+
+    if ($roznica > 0) {
+        $templateWord->setValue('aktywa_trwale_roznica', 'wzrósł');
+    }
+    if ($roznica == 0) {
+        $templateWord->setValue('aktywa_trwale_roznica', 'nie zmienił się');
+    }
+    if ($roznica < 0) {
+        $templateWord->setValue('aktywa_trwale_roznica', 'spadł');
+    }
+}
+
+/* ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW OBROTOWYCH */
+function insertAnalizaAktywowObrotowych(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    $aktywaObrotoweProcentTable = $wskaznik->getAktywaObrotoweProcent();
+    $templateWord->setValue('aktywa_obrotowe_procent_2', number_format($aktywaObrotoweProcentTable[2],2,',',' '));
+    $templateWord->setValue('aktywa_obrotowe_procent_1', number_format($aktywaObrotoweProcentTable[1],2,',',' '));
+    $templateWord->setValue('aktywa_obrotowe_procent_0', number_format($aktywaObrotoweProcentTable[0],2,',',' '));
+    $roznica = $aktywaObrotoweProcentTable[0] - $aktywaObrotoweProcentTable[1];
+
+    if ($roznica > 0) {
+        $templateWord->setValue('aktywa_obrotowe_roznica', 'wzrósł');
+    }
+    if ($roznica == 0) {
+        $templateWord->setValue('aktywa_obrotowe_roznica', 'nie zmienił się');
+    }
+    if ($roznica < 0) {
+        $templateWord->setValue('aktywa_obrotowe_roznica', 'spadł');
+    }
+}
+
+/* ANALIZA SYTUACJI FINANSOWEJ - ANALIZA PASYWÓW – KAPITAŁY DŁUGOTERMINOWE*/

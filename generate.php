@@ -50,6 +50,41 @@ insertWskazniki($templateWord, $wskaznik);                                  // W
 /* Wstawiam słowa */
 insertPorownaniePrzychodowZeSprzedazy($templateWord, $wskaznik);            // WYBRANE DANE FIRMY - (niższym/wyższym/takim samym) Wstawiam informacje o różnicy w przychodach ze sprzedaży
 insertOkreslenieDynamikiPrzychodow($templateWord, $wskaznik);               // WYBRANE DANE FIRMY - (dodatnią/ujemną) Wstawiam informacje o dynamice przychodów w roku bazowym
+insertWybraneDaneFirmy_punkt_2($templateWord, $wskaznik);                   // WYBRANE DANE FIRMY - Punkt nr 2 (zysk)
+
+/* Wstawianie treści dotyczącej analizy wskaźnikowej */
+/* PŁYNNOŚĆ FINANSOWA */
+insertWskPlynnosciBiezacej($templateWord, $wskaznik);                       // Dotyczy: wskaźnik płynności bieżącej
+insertDynamikaWskPlynnosciBiezacej($templateWord, $wskaznik);               // Dotyczy: dynamika wskaźnika płynności bieżącej
+insertWskPlynnosciSzybkiej($templateWord, $wskaznik);                       // Dotyczy: wskaźnik płynności szybkiej
+insertDynamikaWskPlynnosciSzybkiej($templateWord, $wskaznik);               // Dotyczy: dynamika wskaźnik płynności szybkiej
+insertWskPlynnosciGotowkowej($templateWord, $wskaznik);                     // Dotyczy: wskaźnik płynności gotówkowej
+insertDynamikaWskPlynnosciGotowkowej($templateWord, $wskaznik, $bilans);    // Dotyczy: dynamika wskaźnik płynności gotówkowej
+/* SPRAWNOŚĆ W ZARZĄDZANIU */
+insertWskRotacjiNaleznosci($templateWord, $wskaznik, $bilans);              // Dotyczy: wskaźnik rotacji należności
+insertDynamikaWskRotacjiNaleznosci($templateWord, $wskaznik);               // Dotyczy: dynamika wskaźnik rotacji należności
+insertWskRotacjiZobowiazan($templateWord, $wskaznik);                       // Dotyczy: wskaźnik rotacji zobowiązań
+insertDynamikaWskRotacjiZobowiazan($templateWord, $wskaznik);               // Dotyczy: dynamika wskaźnik rotacji zobowiązań
+insertCyklKonwersjiGotowkowej($templateWord, $wskaznik);                    // Dotyczy: cykl konwersji gotówkowej
+insertDynamikaCyklKonwersjiGotowkowej($templateWord, $wskaznik, $bilans);   // Dotyczy: dynamika wskaźnik cykl konwersji gotówkowej
+/* ANALIZA ZYSKOWNOŚCI */
+insertROI($templateWord, $wskaznik);                                        // Dotyczy: ROI
+insertROE($templateWord, $wskaznik);                                        // Dotyczy: ROE
+insertDynamikaROE($templateWord, $wskaznik);                                // Dotyczy: dynamika ROE
+insertRentownoscPrzychodow($templateWord, $wskaznik);                       // Dotyczy: rentowność przychodów
+/* ANALIZA POZIOMU ZADŁUŻENIA */
+insertPokrycieAktywow($templateWord, $wskaznik);                            // Dotyczy: Pokrycia aktywów
+insertDynamikaPokryciaAktywow($templateWord, $wskaznik);                    // Dotyczy: dynamika pokrycia aktywów
+insertZadluzenieOgolne($templateWord, $wskaznik);                           // Dotyczy: zadłużenie ogólne
+insertDynamikaZadluzeniaOgolnego($templateWord, $wskaznik);                 // Dotyczy: dynamika zadłużenia ogólnego
+insertPokrycieAktywowTrwalych($templateWord, $wskaznik);                    // Dotyczy: pokrycie aktywów trwałych
+insertDynamikaPokryciaAktywowTrwalych($templateWord, $wskaznik);            // Dotyczy: dynamika pokrycia aktywów trwałych
+/* ANALIZA PRODUKTYWNOŚCI */
+insertProduktywnoscAktywow($templateWord, $wskaznik);                       // Dotyczy: Produktywność aktywów
+/* ANALIZA SYTUACJI FINANSOWEJ */
+insertAnalizaAktywowTrwalych($templateWord, $wskaznik);                     // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW TRWAŁYCH
+insertAnalizaAktywowObrotowych($templateWord, $wskaznik);                   // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW OBROTOWYCH
+
 
 /* Zapisanie raportu */
 $firma = $bilans->getFirma();
