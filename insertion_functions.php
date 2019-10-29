@@ -1139,4 +1139,10 @@ function insertAnalizaAktywowObrotowych(\PhpOffice\PhpWord\TemplateProcessor $te
     }
 }
 
-/* ANALIZA SYTUACJI FINANSOWEJ - ANALIZA PASYWÓW – KAPITAŁY DŁUGOTERMINOWE*/
+/* ANALIZA SYTUACJI FINANSOWEJ - ANALIZA PASYWÓW – KAPITAŁY DŁUGOTERMINOWE */
+function insertAnalizaPasywowKapitalyDlugoterminowe(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    $kapitalWlasnyTable = $wskaznik->getKapitalWlasny();
+    $templateWord->setValue('kapital_wlasny_2', number_format($kapitalWlasnyTable[2],2,',',' '));
+    $templateWord->setValue('kapital_wlasny_1', number_format($kapitalWlasnyTable[1],2,',',' '));
+    $templateWord->setValue('kapital_wlasny_0', number_format($kapitalWlasnyTable[0],2,',',' '));
+}

@@ -84,6 +84,7 @@ insertProduktywnoscAktywow($templateWord, $wskaznik);                       // D
 /* ANALIZA SYTUACJI FINANSOWEJ */
 insertAnalizaAktywowTrwalych($templateWord, $wskaznik);                     // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW TRWAŁYCH
 insertAnalizaAktywowObrotowych($templateWord, $wskaznik);                   // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW OBROTOWYCH
+insertAnalizaPasywowKapitalyDlugoterminowe($templateWord, $wskaznik);       // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA PASYWÓW – KAPITAŁY DŁUGOTERMINOWE
 
 
 /* Zapisanie raportu */
