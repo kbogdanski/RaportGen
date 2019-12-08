@@ -192,6 +192,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <dt class="col-sm-4">Wartość szacowana metodą likwidacyjną:</dt>
             <dd class="col-sm-8"><?php echo number_format($bilans->getWartoscLikwidacyjna(),2,',',' ') ?></dd>
         </dl>
+        <?php
+        if (count($wskaznik->getStatusDanych()) != 0 ) {
+            echo "<hr>";
+            echo "Zerowe wartości w zaczytanym pliku:<br>";
+            echo "<dl>";
+                foreach ($wskaznik->getStatusDanych() as $key => $braki) {
+                    echo "<dt class='col-sm-4'>$key - za lata:</dt>";
+                    echo "<dd class='col-sm-8'>";
+                    foreach ($braki as $years => $value) {
+                        echo "$value, ";
+                    }
+                    echo "</dd>";
+                }
+            echo "</dl>";
+        }
+        ?>
+        <hr>
         <div class="row">
             <div class="col-sm-12">
                 <a class="btn btn-success btn-block" href="generate.php">GENERUJ RAPORT</a>

@@ -90,6 +90,10 @@ class Wskaznik {
     private $zyskBrutto;                    // TABLICA[5-elementowa] Wiersz 184 + 237    Zysk (strata) brutto (L-+M)
     private $zyskNetto;                     // TABLICA[5-elementowa] Wiersz 187 + 240    Zysk (strata) netto (N-O-P)
 
+    //Status danych
+    private $statusDanych;                  // TABLICA TABLIC. Zawiera informacje który z atrybutów jest pusty
+                                            // tz. jego wartość równa się zero ponieważ nie było danych w pliku
+
     /* Wskaźniki płynności finansowej */
     private $wskPlynnosciBiezacej;          // TABLICA[5-elementowa] Wskaźnik płynności bieżącej
     private $wskPlynnosciSzybkiej;          // TABLICA[5-elementowa] Wskaźnik płynności szybkiej
@@ -176,6 +180,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Aktywa trwałe"]["$key"] = $year;
                 }
             }
         }
@@ -202,6 +207,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Rzeczowe aktywa trwałe"]["$key"] = $year;
                 }
             }
         }
@@ -228,6 +234,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Środki trwałe"]["$key"] = $year;
                 }
             }
         }
@@ -254,6 +261,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Aktywa obrotowe"]["$key"] = $year;
                 }
             }
         }
@@ -280,6 +288,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Zapasy"]["$key"] = $year;
                 }
             }
         }
@@ -306,6 +315,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Należności krótkoterminowe"]["$key"] = $year;
                 }
             }
         }
@@ -332,6 +342,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Należności od pozostałych jednostek"]["$key"] = $year;
                 }
             }
         }
@@ -358,6 +369,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Inwestycje krótkoterminowe"]["$key"] = $year;
                 }
             }
         }
@@ -384,6 +396,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Kapitał własny"]["$key"] = $year;
                 }
             }
         }
@@ -410,6 +423,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Zobowiązania"]["$key"] = $year;
                 }
             }
         }
@@ -436,6 +450,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Zobowiązania długoterminowe"]["$key"] = $year;
                 }
             }
         }
@@ -462,6 +477,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Zobowiązania krótkoterminowe"]["$key"] = $year;
                 }
             }
         }
@@ -488,6 +504,7 @@ class Wskaznik {
                     $toReturn[] = $value;
                 } else {
                     $toReturn[] = 0.00;
+                    $this->statusDanych["Pasywa razem"]["$key"] = $year;
                 }
             }
         }
@@ -515,6 +532,7 @@ class Wskaznik {
                 }
                 if ($value == null) {
                     $value = 0.00;
+                    $this->statusDanych["Przychody netto"]["$key"] = $year;
                 }
                 $toReturn[] = $value;
             }
@@ -543,6 +561,7 @@ class Wskaznik {
                 }
                 if ($value == null) {
                     $value = 0.00;
+                    $this->statusDanych["Koszty działalności operacyjnej"]["$key"] = $year;
                 }
                 $toReturn[] = $value;
             }
@@ -571,6 +590,7 @@ class Wskaznik {
                 }
                 if ($value == null) {
                     $value = 0.00;
+                    $this->statusDanych["Zysk brutto"]["$key"] = $year;
                 }
                 $toReturn[] = $value;
             }
@@ -599,11 +619,19 @@ class Wskaznik {
                 }
                 if ($value == null) {
                     $value = 0.00;
+                    $this->statusDanych["Zysk netto"]["$key"] = $year;
                 }
                 $toReturn[] = $value;
             }
         }
         $this->zyskNetto = $toReturn;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatusDanych() {
+        return $this->statusDanych;
     }
 
     /**
@@ -620,7 +648,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->aktywaObrotowe[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
+            if ($this->zobowiazaniaKrotkoterminowe[$i] != 0) {
+                $toReturn[] = $this->aktywaObrotowe[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->wskPlynnosciBiezacej = $toReturn;
     }
@@ -639,7 +671,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = ($this->naleznosciKrotkoterminowe[$i] + $this->inwestycjeKrotkoterminowe[$i]) / $this->zobowiazaniaKrotkoterminowe[$i];
+            if ($this->zobowiazaniaKrotkoterminowe[$i] != 0) {
+                $toReturn[] = ($this->naleznosciKrotkoterminowe[$i] + $this->inwestycjeKrotkoterminowe[$i]) / $this->zobowiazaniaKrotkoterminowe[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->wskPlynnosciSzybkiej = $toReturn;
     }
@@ -658,7 +694,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->inwestycjeKrotkoterminowe[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
+            if ($this->zobowiazaniaKrotkoterminowe[$i] != 0) {
+                $toReturn[] = $this->inwestycjeKrotkoterminowe[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->wskPlynnosciGotowka = $toReturn;
     }
@@ -677,7 +717,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->przychodyNetto[$i] / $this->naleznosciKrotkoterminowe[$i];
+            if ($this->naleznosciKrotkoterminowe[$i] != 0) {
+                $toReturn[] = $this->przychodyNetto[$i] / $this->naleznosciKrotkoterminowe[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->rotacjaNaleznosciWrazach = $toReturn;
     }
@@ -696,7 +740,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->naleznosciOdPozostalychJedn[$i] / $this->przychodyNetto[$i] * 360;
+            if ($this->przychodyNetto[$i] != 0) {
+                $toReturn[] = $this->naleznosciOdPozostalychJedn[$i] / $this->przychodyNetto[$i] * 360;
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->rotacjaNaleznosciWdniach = $toReturn;
     }
@@ -715,7 +763,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->przychodyNetto[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
+            if ($this->zobowiazaniaKrotkoterminowe[$i] != 0) {
+                $toReturn[] = $this->przychodyNetto[$i] / $this->zobowiazaniaKrotkoterminowe[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->rotacjaZobowiazanWrazach = $toReturn;
     }
@@ -734,7 +786,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->zobowiazaniaKrotkoterminowe[$i] / $this->przychodyNetto[$i] * 360;
+            if ($this->przychodyNetto[$i] != 0) {
+                $toReturn[] = $this->zobowiazaniaKrotkoterminowe[$i] / $this->przychodyNetto[$i] * 360;
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->rotacjaZobowiazanWdniach = $toReturn;
     }
@@ -753,7 +809,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->przychodyNetto[$i] / $this->zapasy[$i];
+            if ($this->zapasy[$i] != 0) {
+                $toReturn[] = $this->przychodyNetto[$i] / $this->zapasy[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->rotacjaZapasowWrazach = $toReturn;
     }
@@ -772,7 +832,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->zapasy[$i] / $this->przychodyNetto[$i] * 360;
+            if ($this->przychodyNetto[$i] != 0) {
+                $toReturn[] = $this->zapasy[$i] / $this->przychodyNetto[$i] * 360;
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->rotacjaZapasowWdniach = $toReturn;
     }
@@ -791,7 +855,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->zyskNetto[$i] / $this->pasywaRazem[$i];
+            if ($this->pasywaRazem[$i] != 0) {
+                $toReturn[] = $this->zyskNetto[$i] / $this->pasywaRazem[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->ROI = $toReturn;
     }
@@ -810,7 +878,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->zyskNetto[$i] / $this->kapitalWlasny[$i];
+            if ($this->kapitalWlasny[$i] != 0) {
+                $toReturn[] = $this->zyskNetto[$i] / $this->kapitalWlasny[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->ROE = $toReturn;
     }
@@ -829,7 +901,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->zyskNetto[$i] / $this->przychodyNetto[$i];
+            if ($this->przychodyNetto[$i] != 0) {
+                $toReturn[] = $this->zyskNetto[$i] / $this->przychodyNetto[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->zyskownoscPrzychodow = $toReturn;
     }
@@ -848,7 +924,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->pasywaRazem[$i] / $this->kapitalWlasny[$i];
+            if ($this->kapitalWlasny[$i] != 0) {
+                $toReturn[] = $this->pasywaRazem[$i] / $this->kapitalWlasny[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->pokrycieAktywow = $toReturn;
     }
@@ -867,7 +947,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->zobowiazania[$i] / $this->kapitalWlasny[$i];
+            if ($this->kapitalWlasny[$i] != 0) {
+                $toReturn[] = $this->zobowiazania[$i] / $this->kapitalWlasny[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->zadluzenieOgolne = $toReturn;
     }
@@ -886,7 +970,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->kapitalWlasny[$i] / $this->aktywaTrwale[$i];
+            if ($this->aktywaTrwale[$i] != 0) {
+                $toReturn[] = $this->kapitalWlasny[$i] / $this->aktywaTrwale[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->pokrycieMajatkuTrwalego = $toReturn;
     }
@@ -905,7 +993,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->przychodyNetto[$i] / $this->pasywaRazem[$i];
+            if ($this->pasywaRazem[$i] != 0) {
+                $toReturn[] = $this->przychodyNetto[$i] / $this->pasywaRazem[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->produktywnoscAktywow = $toReturn;
     }
@@ -924,7 +1016,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = $this->przychodyNetto[$i] / $this->aktywaTrwale[$i];
+            if ($this->aktywaTrwale[$i] != 0) {
+                $toReturn[] = $this->przychodyNetto[$i] / $this->aktywaTrwale[$i];
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->produktywnoscMajatkuTrwalego = $toReturn;
     }
@@ -1000,7 +1096,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = ($this->aktywaTrwale[$i] / $this->pasywaRazem[$i]) * 100;
+            if ($this->pasywaRazem[$i] != 0) {
+                $toReturn[] = ($this->aktywaTrwale[$i] / $this->pasywaRazem[$i]) * 100;
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->aktywaTrwaleProcent = $toReturn;
     }
@@ -1019,7 +1119,11 @@ class Wskaznik {
         $toReturn = [];
         $ilosc = $this->iloscLatDoAnalizy;
         for($i=0; $i<$ilosc; $i++) {
-            $toReturn[] = ($this->aktywaObrotowe[$i] / $this->pasywaRazem[$i]) * 100;
+            if ($this->pasywaRazem[$i] != 0) {
+                $toReturn[] = ($this->aktywaObrotowe[$i] / $this->pasywaRazem[$i]) * 100;
+            } else {
+                $toReturn[] = 0;
+            }
         }
         $this->aktywaObrotoweProcent = $toReturn;
     }
