@@ -83,7 +83,9 @@ insertDynamikaPokryciaAktywowTrwalych($templateWord, $wskaznik);            // D
 insertProduktywnoscAktywow($templateWord, $wskaznik);                       // Dotyczy: Produktywność aktywów
 /* ANALIZA SYTUACJI FINANSOWEJ */
 insertAnalizaAktywowTrwalych($templateWord, $wskaznik);                     // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW TRWAŁYCH
+insertAnalizaDynamikiAktywowTrwalych($templateWord, $wskaznik);             // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA DYNAMIKI AKTYWÓW TRWAŁYCH
 insertAnalizaAktywowObrotowych($templateWord, $wskaznik);                   // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW OBROTOWYCH
+insertAnalizaDynamikiAktywowObrotowych($templateWord, $wskaznik);           // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA DYNAMIKI AKTYWÓW OBROTOWYCH
 insertAnalizaPasywowKapitalyDlugoterminowe($templateWord, $wskaznik);       // ANALIZA SYTUACJI FINANSOWEJ - ANALIZA PASYWÓW – KAPITAŁY DŁUGOTERMINOWE
 
 

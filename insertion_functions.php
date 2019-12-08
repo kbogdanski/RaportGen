@@ -357,8 +357,8 @@ function insertOkreslenieDynamikiPrzychodow(\PhpOffice\PhpWord\TemplateProcessor
 
 /* WYBRANE DANE FIRMY - Punkt nr 2 (zysk) */
 function insertWybraneDaneFirmy_punkt_2(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
-    $zyskiProcentTable = $wskaznik->getZyski();
-    if ($zyskiProcentTable[0] >= 0) {
+    $zyskNettoTable = $wskaznik->getZyskNetto();
+    if ($zyskNettoTable[0] >= 0) {
         $templateWord->setValue('podsumowanie_zyski_1', 'dobrym sygnałem jest stała obecność');
         $templateWord->setValue('podsumowanie_zyski_2', 'silna');
     } else {
@@ -1120,6 +1120,21 @@ function insertAnalizaAktywowTrwalych(\PhpOffice\PhpWord\TemplateProcessor $temp
     }
 }
 
+/* ANALIZA SYTUACJI FINANSOWEJ - ANALIZA DYNAMIKI AKTYWÓW TRWAŁYCH */
+function insertAnalizaDynamikiAktywowTrwalych(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego.
+    //Wzór: $dynamikaAktywaTrwale = ((($aktywaTrwale[i] / $aktywaTrwale[i+1])*1) - 1)*100
+    //W szablonie - ${analiza_dynamiki_aktywow_trwalych}
+    $aktywaTrwaleTable = $wskaznik->getAktywaTrwale();
+    $dynamikaAktywaTrwale = ((($aktywaTrwaleTable[0]/$aktywaTrwaleTable[1])*1) - 1)*100;
+
+    if ($dynamikaAktywaTrwale >=0) {
+        $templateWord->setValue('analiza_dynamiki_aktywow_trwalych', 'dodatnią');
+    } else {
+        $templateWord->setValue('analiza_dynamiki_aktywow_trwalych', 'ujemną');
+    }
+}
+
 /* ANALIZA SYTUACJI FINANSOWEJ - ANALIZA AKTYWÓW OBROTOWYCH */
 function insertAnalizaAktywowObrotowych(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
     $aktywaObrotoweProcentTable = $wskaznik->getAktywaObrotoweProcent();
@@ -1136,6 +1151,21 @@ function insertAnalizaAktywowObrotowych(\PhpOffice\PhpWord\TemplateProcessor $te
     }
     if ($roznica < 0) {
         $templateWord->setValue('aktywa_obrotowe_roznica', 'spadł');
+    }
+}
+
+/* ANALIZA SYTUACJI FINANSOWEJ - ANALIZA DYNAMIKI AKTYWÓW OBROTOWYCH */
+function insertAnalizaDynamikiAktywowObrotowych(\PhpOffice\PhpWord\TemplateProcessor $templateWord, Wskaznik $wskaznik) {
+    //dynamika to wartość z roku bieżącego podzielić na wartość z poprzedniego.
+    //Wzór: $dynamikaAktywaObrotowe = ((($aktywaObrotowe[i] / $aktywaObrotowe[i+1])*1) - 1)*100
+    //W szablonie - ${analiza_dynamiki_aktywow_obrotowych}
+    $aktywaObrotoweTable = $wskaznik->getAktywaObrotowe();
+    $dynamikaAktywaObrotowe = ((($aktywaObrotoweTable[0]/$aktywaObrotoweTable[1])*1) - 1)*100;
+
+    if ($dynamikaAktywaObrotowe >=0) {
+        $templateWord->setValue('analiza_dynamiki_aktywow_obrotowych', 'zwiększa');
+    } else {
+        $templateWord->setValue('analiza_dynamiki_aktywow_obrotowych', 'zmniejsza');
     }
 }
 
