@@ -91,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="css/bootstrap.min.css" rel="stylesheet"> <!-- plik bootstrap-->
     <script src="js/jquery-1.12.4.min.js"></script> <!-- plik jquery-->
     <script src="js/bootstrap.min.js"></script> <!-- plik js/boorstrap-->
+    <script src="js/skrypty.js"></script> <!-- plik ze skryptami js-->
 </head>
 <body>
 <div class="container">
@@ -100,6 +101,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <br><br>
             <form role="form" method="post" action="summary.php" enctype="multipart/form-data">
                 <div class="form-group">
+                    <div class="row" style="text-align: center">
+                        <button type="submit" class="btn btn-success">Wyślij</button>
+                        <a id="button_stale_przepl_pienieznych" class="btn btn-primary">Stałe przepływów pienieżnych</a>
+                        <a id="button_wartosci_korekty" class="btn btn-primary">Wartości korekty</a>
+                        <a id="button_stopy_wzrostu" class="btn btn-primary">Stopy wzrostu</a>
+                    </div>
+                    <hr>
                     <div class="row">
                         <div class="col-sm-6">
                             <!-- <div class="form-group row">
@@ -139,65 +147,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                             <hr>
-                            <div class="form-group row">
-                                <label class="col-sm-8 col-form-label-sm">Dywidendy jako odsetek przepływów pieniężnych
-                                    netto</label>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" value=100 name="dywidendy">
+                            <div class="hidden" id="stale_przeplywow_pienieznych">
+                                <div class="form-group row">
+                                    <label class="col-sm-8 col-form-label-sm">Dywidendy jako odsetek przepływów pieniężnych
+                                        netto</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value=100 name="dywidendy">
+                                    </div>
+                                    <span>%</span>
                                 </div>
-                                <span>%</span>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-8 col-form-label-sm">Średnie oprocentowanie zadłużenia
-                                    długoterminowego</label>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" value=12 name="srOprZadlDl">
+                                <div class="form-group row">
+                                    <label class="col-sm-8 col-form-label-sm">Średnie oprocentowanie zadłużenia
+                                        długoterminowego</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value=12 name="srOprZadlDl">
+                                    </div>
+                                    <span>%</span>
                                 </div>
-                                <span>%</span>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-8 col-form-label-sm">Stopa podatku dochodowego</label>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" value=19 name="stopaPodDoch">
+                                <div class="form-group row">
+                                    <label class="col-sm-8 col-form-label-sm">Stopa podatku dochodowego</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value=19 name="stopaPodDoch">
+                                    </div>
+                                    <span>%</span>
                                 </div>
-                                <span>%</span>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-8 col-form-label-sm">Wolna od ryzyka stopa dyskontowa</label>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" value=6 name="stopaDyskontowa">
+                                <div class="form-group row">
+                                    <label class="col-sm-8 col-form-label-sm">Wolna od ryzyka stopa dyskontowa</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value=6 name="stopaDyskontowa">
+                                    </div>
+                                    <span>%</span>
                                 </div>
-                                <span>%</span>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-8 col-form-label-sm">Premia rynkowa z tytułu ryzyka</label>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" value=7 name="premiaRynkowaRyzyka">
+                                <div class="form-group row">
+                                    <label class="col-sm-8 col-form-label-sm">Premia rynkowa z tytułu ryzyka</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value=7 name="premiaRynkowaRyzyka">
+                                    </div>
+                                    <span>%</span>
                                 </div>
-                                <span>%</span>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-8 col-form-label-sm">Współczynnik beta</label>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" value=1.2 name="wspBeta">
+                                <div class="form-group row">
+                                    <label class="col-sm-8 col-form-label-sm">Współczynnik beta</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value=1.2 name="wspBeta">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-8 col-form-label-sm">Premia z tytułu wielkości</label>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" value=4 name="premiaWielkosci">
+                                <div class="form-group row">
+                                    <label class="col-sm-8 col-form-label-sm">Premia z tytułu wielkości</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value=4 name="premiaWielkosci">
+                                    </div>
+                                    <span>%</span>
                                 </div>
-                                <span>%</span>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-8 col-form-label-sm">Premia z tytułu ryzyka specyficznego</label>
-                                <div class="col-sm-3">
-                                    <input type="text" class="form-control" value=2 name="premiaRyzykaSpec">
+                                <div class="form-group row">
+                                    <label class="col-sm-8 col-form-label-sm">Premia z tytułu ryzyka specyficznego</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value=2 name="premiaRyzykaSpec">
+                                    </div>
+                                    <span>%</span>
                                 </div>
-                                <span>%</span>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 hidden" id="wartosci_korekty">
                             <p style="float: right"><b>Wartość korekty</b></p><br>
                             <hr>
                             <div class="form-group row">
@@ -272,7 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row hidden" id="stopy_wzrostu">
                         <p style="float: right"><b>Wariant zerowy - Wariant branżowy - Wariant średniej dynamiki</b></p>
                         <br>
                         <hr>
@@ -414,7 +424,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Wyślij</button>
                 </div>
             </form>
             <br><br><br><br>
