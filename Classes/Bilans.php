@@ -356,13 +356,16 @@ class Bilans {
      * @param mixed $excelFile , $yearsTable
      */
     private function setKosztyDzialanosciOperacyjnej($excelFile, $yearsTable) {
-        //wiersz w pliku Excel 199
+        //wiersz w pliku Excel 199 (w wersji porównawczej)
+        //wiersz w pliku Excel 145 - 156 (w wersji kalkulacyjnej)
         $toReturn = [];
         if ($excelFile != false) {
             foreach ($yearsTable as $key => $year) {
                 $value = $excelFile->getActiveSheet()->getCell("$key" . "199")->getValue();
                 if ($value == null) {
-                    $value = 0.00;
+                    //Jeśli nie ma w wersji porownawczej to liczymy na podstawie danych z wersji kalkulacyjnej.
+                    //Wiersze (145 - 156) A - F
+                    $value = ($excelFile->getActiveSheet()->getCell("$key" . "145")->getValue()) - ($excelFile->getActiveSheet()->getCell("$key" . "156")->getValue());
                 }
                 $toReturn[] = $value;
             }
