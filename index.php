@@ -126,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label class="col-sm-3 col-form-label-sm">Dane za lata: </label>
                                 <div class="col-sm-9">
                                     <select class="form-control" name="rok">
+                                        <option value="2019">2019 - 2017</option>
                                         <option value="2018">2018 - 2016</option>
                                         <option value="2017">2017 - 2015</option>
                                         <option value="2016">2016 - 2014</option>
