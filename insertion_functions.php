@@ -1191,4 +1191,12 @@ function insertAnalizaPasywowKapitalyDlugoterminowe(\PhpOffice\PhpWord\TemplateP
     $templateWord->setValue('kapital_wlasny_2', number_format($udzialKapitalowWlasnych_2,2,',',' '));
     $templateWord->setValue('kapital_wlasny_1', number_format($udzialKapitalowWlasnych_1,2,',',' '));
     $templateWord->setValue('kapital_wlasny_0', number_format($udzialKapitalowWlasnych_0,2,',',' '));
+
+    if ($udzialKapitalowWlasnych_0 >= $udzialKapitalowWlasnych_1) {
+        $templateWord->setValue('kapital_wlasny_wynik_1', 'poprawę');
+        $templateWord->setValue('kapital_wlasny_wynik_2', '');
+    } else {
+        $templateWord->setValue('kapital_wlasny_wynik_1', 'pogorszenie');
+        $templateWord->setValue('kapital_wlasny_wynik_2', 'nie');
+    }
 }
