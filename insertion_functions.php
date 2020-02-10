@@ -1184,7 +1184,11 @@ function insertAnalizaPasywowKapitalyDlugoterminowe(\PhpOffice\PhpWord\TemplateP
     }
 
     $kapitalWlasnyTable = $wskaznik->getKapitalWlasny();
-    $templateWord->setValue('kapital_wlasny_2', number_format($kapitalWlasnyTable[2],2,',',' '));
-    $templateWord->setValue('kapital_wlasny_1', number_format($kapitalWlasnyTable[1],2,',',' '));
-    $templateWord->setValue('kapital_wlasny_0', number_format($kapitalWlasnyTable[0],2,',',' '));
+    $pasywaRazemTable = $wskaznik->getPasywaRazem();
+    $udzialKapitalowWlasnych_0 = ($kapitalWlasnyTable[0]/$pasywaRazemTable[0])*100;
+    $udzialKapitalowWlasnych_1 = ($kapitalWlasnyTable[1]/$pasywaRazemTable[1])*100;
+    $udzialKapitalowWlasnych_2 = ($kapitalWlasnyTable[2]/$pasywaRazemTable[2])*100;
+    $templateWord->setValue('kapital_wlasny_2', number_format($udzialKapitalowWlasnych_2,2,',',' '));
+    $templateWord->setValue('kapital_wlasny_1', number_format($udzialKapitalowWlasnych_1,2,',',' '));
+    $templateWord->setValue('kapital_wlasny_0', number_format($udzialKapitalowWlasnych_0,2,',',' '));
 }
