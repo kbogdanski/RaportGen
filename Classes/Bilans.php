@@ -94,6 +94,7 @@ class Bilans {
 
     //ATTRIBUTES
     private $firma;                                 // Nazwa firmy
+    private $KRS;                                   // Numer KRS firmy (pobierany z zaczytanego excela - komórka A3)
     private $wartoscLikwidacyjna;                   // LICZBA wyliczana z algorytmu
     private $rok0;                                  // Rok bazowy           z bilansu firmy
     private $rok1;                                  // Rok bazowy minus 1   z bilansu firmy
@@ -191,6 +192,7 @@ class Bilans {
     //FUNCTIONS
     public function __construct() {
         $this->firma = '';
+        $this->KRS = 0;
         $this->wartoscLikwidacyjna = 0;
         $this->rok0 = 0;
         $this->rok1 = 0;
@@ -262,7 +264,7 @@ class Bilans {
         return $this->firma;
     }
 
-    private function setFirma($excel) {
+    private function setFirma(PHPExcel $excel) {
         $firma = $excel->getActiveSheet()->getCell('A1')->getValue();
         $iloscZnakowNazwyFirmy = strpos($firma, ",");
         if ($iloscZnakowNazwyFirmy != false) {
@@ -270,6 +272,16 @@ class Bilans {
         } else {
             $this->firma = $firma;
         }
+    }
+
+    public function getKRS() {
+        return $this->KRS;
+    }
+
+    private function setKRS(PHPExcel $excel) {
+        $tekst = $excel->getActiveSheet()->getCell('A3')->getValue();
+        $wyrazy = explode(" ", $tekst);
+        $this->KRS = (int)($wyrazy[1]);
     }
 
     public function getWartoscLikwidacyjna() {
@@ -1775,6 +1787,9 @@ class Bilans {
 
         //Ustawia atrybut FIRMA - nazwa firmy z wsadowego pliku Excel
         $this->setFirma($excel);
+
+        //Ustawia atrybut KRS - numer KRS firmy z wsadowego pliku Excel
+        $this->setKRS($excel);
 
         //Ustawia atrybuty ROK z których będzie pobierał bilans firmy
         $this->setRok0($form['rok']);
