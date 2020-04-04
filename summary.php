@@ -13,7 +13,13 @@ require_once ("vendor/autoload.php");
 require_once ("Classes/Bilans.php");
 require_once ("Classes/DCF.php");
 require_once ("Classes/Wskaznik.php");
+require_once ("Classes/SOAP.php");
+require_once ("Classes/DaneBranzowe.php");
 require_once ("insertion_functions.php");
+
+$soap = new SOAP();
+$soapSesja = $soap->setSeesion();
+//$soap->getRaportFirmaXML(18769);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['amortyzacja0']) && isset($_POST['amortyzacja1']) && isset($_POST['amortyzacja2'])) {
@@ -84,6 +90,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $yearsTable2 = Wskaznik::CreateBilansTabelYear($file, $rok);
             $wskaznik = Wskaznik::CreateWskaznik($file, $yearsTable2);
             $wskaznik->calculateOthersData();
+
+            //Pobieram raport z SOAP
+            if (!isset($_SESSION['daneBranzowe'])) {
+                $krs = $bilans->getKRS();
+                $xmlRaport = $soap->getRaportFirmaXML($krs);
+                $daneBranzowe = new DaneBranzowe();
+                $daneBranzowe->loadDataFromXLMRaport($xmlRaport, $krs);
+
+                $_SESSION['daneBranzowe'] = serialize($daneBranzowe);
+            }
 
             $_SESSION['bilans'] = serialize($bilans);
             $_SESSION['bilansWariantBranzowy'] = serialize($bilansWariantBranzowy);
@@ -165,6 +181,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="col-sm-3"></div>
         </div>
         <dl class="row">
+            <dt class="col-sm-4">SOAP sesja:</dt>
+            <dd class="col-sm-8"><?php if ($soapSesja['status']) {
+                    echo "<strong style='color: green'>".$soapSesja['sess']."</strong>";
+                } else {
+                    echo "<strong style='color: red'>faultcode: [".$soapSesja['faultcode']."]</strong><br>";
+                    echo "<strong style='color: red'>faultstring: [".$soapSesja['faultstring']."]</strong>";
+                }?>
+            </dd>
+            <dt class="col-sm-4">Dane Branżowe</dt>
+            <dd class="col-sm-8">
+                <?php
+                if (isset($_SESSION['daneBranzowe'])) {
+                    echo "<strong style='color: green'>Pobrano z SOAP</strong>";
+                } else {
+                    echo "<strong style='color: red'>Nie pobrano z SOAP</strong>";
+                }
+                ?>
+            </dd>
             <dt class="col-sm-4">Nazwa firmy:</dt>
             <dd class="col-sm-8"><?php echo $bilans->getFirma() ?></dd>
             <dt class="col-sm-4">Lata do bilansu firmy:</dt>
