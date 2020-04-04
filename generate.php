@@ -14,11 +14,14 @@ require_once ("vendor/autoload.php");
 require_once ("Classes/Bilans.php");
 require_once ("Classes/DCF.php");
 require_once ("Classes/Wskaznik.php");
+require_once ("Classes/SOAP.php");
+require_once ("Classes/DaneBranzowe.php");
 require_once ("Classes/CHART_Aktywa.php");
 require_once ("Classes/CHART_WskPlynnosci.php");
 require_once ("Classes/CHART_WskCyklu.php");
 require_once ("Classes/CHART_WskROIROE.php");
 require_once ("Classes/CHART_WskZadluzenia.php");
+require_once ("Classes/CHART_DaneBranzowe.php");
 require_once ("insertion_functions.php");
 
 $bilans = unserialize($_SESSION['bilans']);
@@ -26,6 +29,7 @@ $bilansWariantBranzowy = unserialize($_SESSION['bilansWariantBranzowy']);
 $bilansWariantSredniejDynamiki = unserialize($_SESSION['bilansWariantSredniejDynamiki']);
 $wartoscDCF = unserialize($_SESSION['wartoscDCF']);
 $wskaznik = unserialize($_SESSION['wskaznik']);
+$daneBranzowe = unserialize($_SESSION['daneBranzowe']);
 
 /* Ładuje plik z szablonem raportu */
 $ilosc = $wskaznik->getIloscLatDoAnalizy();
@@ -48,9 +52,14 @@ insertWybraneDaneFirmy($templateWord, $wskaznik);                           // W
 insertWskazniki($templateWord, $wskaznik);                                  // Wstawiam analize wskaźnikową
 
 /* Wstawiam słowa */
+insertKodAndOpis($templateWord, $daneBranzowe);                             // WYBRANE DANE BRANŻY - kod i opis
 insertPorownaniePrzychodowZeSprzedazy($templateWord, $wskaznik);            // WYBRANE DANE FIRMY - (niższym/wyższym/takim samym) Wstawiam informacje o różnicy w przychodach ze sprzedaży
 insertOkreslenieDynamikiPrzychodow($templateWord, $wskaznik);               // WYBRANE DANE FIRMY - (dodatnią/ujemną) Wstawiam informacje o dynamice przychodów w roku bazowym
 insertWybraneDaneFirmy_punkt_2($templateWord, $wskaznik);                   // WYBRANE DANE FIRMY - Punkt nr 2 (zysk)
+
+/* WYBRANE DANE BRANŻOWE */
+insertLata($templateWord, $daneBranzowe);                                   // WYBRANE DANE BRANŻOWE - wstawianie lat w opisach wykresów
+insertDaneBranzowe($templateWord, $daneBranzowe);                           // WYBRANE DANE BRANŻOWE - wstawia dane pod wykresy
 
 /* Wstawianie treści dotyczącej analizy wskaźnikowej */
 /* PŁYNNOŚĆ FINANSOWA */
@@ -120,6 +129,46 @@ $chartWskZadluzenia = new CHART_WskZadluzenia($plot4, $wskaznik);
 $path_wskZadluzenia = $chartWskZadluzenia->createChartWskZadluzeniaImg();
 insertChartWskZadluzenia($templateWord, $path_wskZadluzenia);
 
+$plotDB1 = new PHPlot(255, 200);
+$plotDB2 = new PHPlot(255, 200);
+$plotDB3 = new PHPlot(255, 200);
+$plotDB4 = new PHPlot(255, 200);
+$plotDB5 = new PHPlot(255, 200);
+$plotDB6 = new PHPlot(255, 200);
+$plotDB7 = new PHPlot(255, 200);
+$plotDB8 = new PHPlot(255, 200);
+$chartDaneBranzowe1 = new CHART_DaneBranzowe($plotDB1, $daneBranzowe);
+$chartDaneBranzowe2 = new CHART_DaneBranzowe($plotDB2, $daneBranzowe);
+$chartDaneBranzowe3 = new CHART_DaneBranzowe($plotDB3, $daneBranzowe);
+$chartDaneBranzowe4 = new CHART_DaneBranzowe($plotDB4, $daneBranzowe);
+$chartDaneBranzowe5 = new CHART_DaneBranzowe($plotDB5, $daneBranzowe);
+$chartDaneBranzowe6 = new CHART_DaneBranzowe($plotDB6, $daneBranzowe);
+$chartDaneBranzowe7 = new CHART_DaneBranzowe($plotDB7, $daneBranzowe);
+$chartDaneBranzowe8 = new CHART_DaneBranzowe($plotDB8, $daneBranzowe);
+
+$path_przychody = $chartDaneBranzowe1->createChartDaneBranzoweImg($chartDaneBranzowe1->getDataPrzychody(), 'przychody');
+insertChartPrzychody($templateWord, $path_przychody);
+
+$path_zyskNetto = $chartDaneBranzowe2->createChartDaneBranzoweImg($chartDaneBranzowe2->getDataZyskNetto(), 'zysk_netto');
+insertChartZyskNetto($templateWord, $path_zyskNetto);
+
+$path_dynamikaPrzychodow = $chartDaneBranzowe3->createChartDaneBranzoweImg($chartDaneBranzowe3->getDataDynamikaPrzychodow(), 'dynamika_przychodow');
+insertChartDynamikaPrzychodow($templateWord, $path_dynamikaPrzychodow);
+
+$path_dynamikaZyskuNetto = $chartDaneBranzowe4->createChartDaneBranzoweImg($chartDaneBranzowe4->getDataDynamikaZyskuNetto(), 'dynamika_zysku_netto');
+insertChartDynamikaZyskuNetto($templateWord, $path_dynamikaZyskuNetto);
+
+$path_rentownoscPrzychodow = $chartDaneBranzowe5->createChartDaneBranzoweImg($chartDaneBranzowe5->getDataRentownoscPrzychodow(), 'rentownosc_przychodow');
+insertChartRentownoscPrzychodow($templateWord, $path_rentownoscPrzychodow);
+
+$path_plynnoscGotowkowa = $chartDaneBranzowe6->createChartDaneBranzoweImg($chartDaneBranzowe6->getDataPlynnoscGotowkowa(), 'plynnosc_gotowkowa');
+insertChartPlynnoscGotowkowa($templateWord, $path_plynnoscGotowkowa);
+
+$path_roe = $chartDaneBranzowe7->createChartDaneBranzoweImg($chartDaneBranzowe7->getDataROE(), 'roe');
+insertChartROE($templateWord, $path_roe);
+
+$path_roi = $chartDaneBranzowe8->createChartDaneBranzoweImg($chartDaneBranzowe8->getDataROI(), 'roi');
+insertChartROI($templateWord, $path_roi);
 
 //$templateWord->setImg('IMGD#1',array('src' => 'image.jpg','swh'=>'250'));
 
