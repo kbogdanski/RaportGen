@@ -396,6 +396,46 @@ function insertChartWskZadluzenia(\PhpOffice\PhpWord\TemplateProcessor $template
     $templateWord->setImg('IMG_WSKZADLUZENIA',array('src' => "$path_image",'swh'=>'650'));
 }
 
+/* WYBRANE DANE BRANŻOWE - Wstawiam wykres "Przychody" */
+function insertChartPrzychody(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_PRZYCHODY',array('src' => "$path_image",'swh'=>'250'));
+}
+
+/* WYBRANE DANE BRANŻOWE - Wstawiam wykres "Zysk Netto" */
+function insertChartZyskNetto(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_ZYSK_NETTO',array('src' => "$path_image",'swh'=>'250'));
+}
+
+/* WYBRANE DANE BRANŻOWE - Wstawiam wykres "Dynamika przychodów" */
+function insertChartDynamikaPrzychodow(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_DYN_PRZY',array('src' => "$path_image",'swh'=>'250'));
+}
+
+/* WYBRANE DANE BRANŻOWE - Wstawiam wykres "Dynamika Zysku Netto" */
+function insertChartDynamikaZyskuNetto(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_DYN_ZN',array('src' => "$path_image",'swh'=>'250'));
+}
+
+/* WYBRANE DANE BRANŻOWE - Wstawiam wykres "Rentowność przychodów" */
+function insertChartRentownoscPrzychodow(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_RENT_PRZY',array('src' => "$path_image",'swh'=>'250'));
+}
+
+/* WYBRANE DANE BRANŻOWE - Wstawiam wykres "Plynność gotówkowa" */
+function insertChartPlynnoscGotowkowa(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_PLYN_GOT',array('src' => "$path_image",'swh'=>'250'));
+}
+
+/* WYBRANE DANE BRANŻOWE - Wstawiam wykres "ROE" */
+function insertChartROE(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_ROE',array('src' => "$path_image",'swh'=>'250'));
+}
+
+/* WYBRANE DANE BRANŻOWE - Wstawiam wykres "ROI" */
+function insertChartROI(\PhpOffice\PhpWord\TemplateProcessor $templateWord, $path_image) {
+    $templateWord->setImg('IMG_ROI',array('src' => "$path_image",'swh'=>'250'));
+}
+
 /*********************/
 /* Wstawianie treści */
 /*********************/
@@ -1198,5 +1238,53 @@ function insertAnalizaPasywowKapitalyDlugoterminowe(\PhpOffice\PhpWord\TemplateP
     } else {
         $templateWord->setValue('kapital_wlasny_wynik_1', 'pogorszenie');
         $templateWord->setValue('kapital_wlasny_wynik_2', 'nie');
+    }
+}
+
+/* WYBRANE DANE BRANŻOWE - kod i opis*/
+function insertKodAndOpis(\PhpOffice\PhpWord\TemplateProcessor $templateWord, DaneBranzowe $daneBranzowe) {
+    $kod = $daneBranzowe->getKod();
+    $opis = $daneBranzowe->getOpis();
+
+    $templateWord->setValue('kod', $kod);
+    $templateWord->setValue('opis', $opis);
+}
+
+/* WYBRANE DANE BRANŻOWE - wstawianie lat*/
+function insertLata(\PhpOffice\PhpWord\TemplateProcessor $templateWord, DaneBranzowe $daneBranzowe) {
+    $lataTab = $daneBranzowe->getWskaznikRok();
+    for ($i=0; $i<6; $i++) {
+        $templateWord->setValue('r'.$i, $lataTab[$i]);
+    }
+}
+
+/* WYBRANE DANE BRANŻOWE - wstawianie danych do wykresów*/
+function insertDaneBranzowe(\PhpOffice\PhpWord\TemplateProcessor $templateWord, DaneBranzowe $daneBranzowe) {
+    $wskaznikiNazwaTab = $daneBranzowe->getWskaznikiNazwa();
+    $dlaFirmTab = $daneBranzowe->getWskaznikFirmy();
+    $dlaBranzyTab = $daneBranzowe->getWskaznikBranzy();
+    $iloscFirmTab = $daneBranzowe->getWskaznikIloscFirm();
+
+    foreach($wskaznikiNazwaTab as $index => $wskaznikNazwa) {
+        $i = 0;
+        foreach($dlaFirmTab[$wskaznikNazwa] as $value) {
+            $value = ($value == null || $value == 0) ? '' : $value;
+            $templateWord->setValue($index.'F'.$i, $value);
+            $i++;
+        }
+
+        $j = 0;
+        foreach($dlaBranzyTab[$wskaznikNazwa] as $value) {
+            $value = ($value == null || $value == 0) ? '' : $value;
+            $templateWord->setValue($index.'B'.$j, $value);
+            $j++;
+        }
+
+        $k = 0;
+        foreach($iloscFirmTab[$wskaznikNazwa] as $value) {
+            $value = ($value == null || $value == 0) ? '' : $value;
+            $templateWord->setValue($index.'IF'.$k, $value);
+            $k++;
+        }
     }
 }
