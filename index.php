@@ -126,6 +126,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label class="col-sm-3 col-form-label-sm">Dane za lata: </label>
                                 <div class="col-sm-9">
                                     <select class="form-control" name="rok">
+                                        <option value="2030">2030 - 2028</option>
+                                        <option value="2029">2029 - 2027</option>
+                                        <option value="2028">2028 - 2026</option>
+                                        <option value="2027">2027 - 2025</option>
+                                        <option value="2026">2026 - 2024</option>
+                                        <option value="2025">2025 - 2023</option>
+                                        <option value="2024">2024 - 2022</option>
+                                        <option value="2023">2023 - 2021</option>
                                         <option value="2022">2022 - 2020</option>
                                         <option value="2021">2021 - 2019</option>
                                         <option value="2020">2020 - 2018</option>
